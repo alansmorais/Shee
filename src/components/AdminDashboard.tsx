@@ -12,6 +12,7 @@ import {
   Workshop,
 } from '../types';
 import { storageService } from '../services/storageService';
+import { GOOGLE_APPS_SCRIPT_CODE } from '../data/backendScript';
 import {
   Calendar as CalendarIcon,
   Users,
@@ -96,13 +97,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   >('dashboard');
 
   // Workshops State (Full Sanctuary Access / Administrator)
-  const [workshopsList, setWorkshopsList] = useState<Workshop[]>(() => workshops || storageService.getWorkshops());
+  const [workshopsList, setWorkshopsList] = useState<Workshop[]>(() =>
+    workshops && workshops.length > 0 ? workshops : storageService.getWorkshops()
+  );
   const [editingWorkshop, setEditingWorkshop] = useState<Partial<Workshop> | null>(null);
   const [workshopCurriculumInput, setWorkshopCurriculumInput] = useState<string>('');
 
   // Keep workshops synced with prop if updated
   React.useEffect(() => {
-    if (workshops) {
+    if (workshops && workshops.length > 0) {
       setWorkshopsList(workshops);
     } else {
       setWorkshopsList(storageService.getWorkshops());
@@ -201,7 +204,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [devAuthError, setDevAuthError] = useState<string | null>(null);
   const [dbResetNotice, setDbResetNotice] = useState<string | null>(null);
   const [isDevAuthenticated, setIsDevAuthenticated] = useState(false);
-  const [backendCode, setBackendCode] = useState<string | null>(null);
+  const [backendCode, setBackendCode] = useState<string>(GOOGLE_APPS_SCRIPT_CODE);
   const [isCopyingBackendCode, setIsCopyingBackendCode] = useState(false);
   const [settingsSavedNotice, setSettingsSavedNotice] = useState(false);
   const [copiedCodeNotice, setCopiedCodeNotice] = useState(false);
@@ -211,8 +214,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     if (isDevAuthenticated && !backendCode) {
       fetch('/api/backend-code')
         .then(res => res.json())
-        .then(data => setBackendCode(data.code))
-        .catch(err => console.error('Failed to fetch backend code:', err));
+        .then(data => {
+          if (data && data.code) {
+            setBackendCode(data.code);
+          }
+        })
+        .catch(() => {
+          setBackendCode(GOOGLE_APPS_SCRIPT_CODE);
+        });
     }
   }, [isDevAuthenticated, backendCode]);
 
@@ -1584,7 +1593,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <th className="p-4">Date &amp; Time</th>
                         <th className="p-4">Location</th>
                         <th className="p-4">Faculty / Facilitators</th>
-                        <th className="p-4">Capacity &amp; Spots</th>
+                        <th className="p-4">Status</th>
                         <th className="p-4">Investment</th>
                         <th className="p-4 text-right">Actions</th>
                       </tr>
@@ -1645,7 +1654,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                             </span>
                           </td>
                           <td className="p-4 font-serif text-base text-main font-medium whitespace-nowrap">
-                            {ws.price.toLocaleString()} {ws.currency || 'kr'}
+                            {ws.price != null ? `${ws.price.toLocaleString()} ${ws.currency || 'kr'}` : 'Inquire'}
                           </td>
                           <td className="p-4 text-right">
                             <div className="flex items-center justify-end space-x-2">

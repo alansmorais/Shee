@@ -171,37 +171,12 @@ class StorageService {
 
   public getWorkshops(): Workshop[] {
     try {
-      const list = this.get<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
-      if (!Array.isArray(list) || list.length === 0 || list.some((w) => w?.facilitators && w.facilitators.length > 0)) {
+      const list = this.get<Workshop[]>(STORAGE_KEYS.WORKSHOPS, INITIAL_WORKSHOPS);
+      if (!Array.isArray(list) || list.length === 0) {
         this.set(STORAGE_KEYS.WORKSHOPS, INITIAL_WORKSHOPS);
         return INITIAL_WORKSHOPS;
       }
-      const cleaned = list
-        .filter((w): w is Workshop => Boolean(w && typeof w === 'object' && w.id))
-        .map((w) => {
-          const match = INITIAL_WORKSHOPS.find(
-            (iw) =>
-              iw.id === w.id ||
-              (w.title && iw.title.toLowerCase().trim() === String(w.title).toLowerCase().trim())
-          );
-          if (match) {
-            return {
-              id: match.id,
-              date: match.date,
-              title: match.title,
-              status: (w.status || 'open') as 'open' | 'closed' | 'sold_out',
-            };
-          }
-          return {
-            ...w,
-            status: (w.status || 'open') as 'open' | 'closed' | 'sold_out',
-          };
-        });
-      const existingIds = new Set(cleaned.map((w) => w.id));
-      const missing = INITIAL_WORKSHOPS.filter((iw) => !existingIds.has(iw.id));
-      const finalResult = [...cleaned, ...missing];
-      this.set(STORAGE_KEYS.WORKSHOPS, finalResult);
-      return finalResult;
+      return list.filter((w): w is Workshop => Boolean(w && typeof w === 'object' && w.id));
     } catch (e) {
       console.warn('Error reading workshops from storage, falling back to initial data:', e);
       return INITIAL_WORKSHOPS;
