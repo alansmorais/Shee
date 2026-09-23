@@ -65,16 +65,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" id="app-entry" src="/src/main.tsx"></script>
     <!-- Automatic GitHub Pages / Static Hosting router -->
     <script type="text/javascript">
       (function() {
-        // Only run redirect if this is the uncompiled source file containing /src/main.tsx
-        var isUncompiledSource = !!document.querySelector('script[src*="src/main.tsx"]');
         var host = window.location.hostname;
         var isDevServer = host === 'localhost' || host === '127.0.0.1' || host.includes('.run.app') || window.location.port === '3000';
+        var entry = document.getElementById('app-entry');
+        var isSourceFile = entry && entry.getAttribute('src') && entry.getAttribute('src').indexOf('/src/main.tsx') !== -1;
         
         // If uncompiled source is served on static hosting (e.g. GitHub Pages set to / root)
-        if (isUncompiledSource && !isDevServer) {
+        if (isSourceFile && !isDevServer) {
           if (!window.location.pathname.includes('/docs/')) {
             var base = window.location.pathname.replace(/\/+$/, '');
             window.location.replace((base ? base : '') + '/docs/' + window.location.search + window.location.hash);
@@ -82,7 +83,6 @@
         }
       })();
     </script>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 

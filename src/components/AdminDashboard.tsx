@@ -524,7 +524,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <optgroup label="Practitioners">
                   {practitioners.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({p.role.split('•')[0].trim()})
+                      {p.name} ({p.role ? p.role.split('•')[0].trim() : 'Practitioner'})
                     </option>
                   ))}
                 </optgroup>
@@ -1130,7 +1130,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                               onClick={() => setSelectedBookingDetail(b)}
                               className="w-full text-left p-1 rounded-md text-[10px] bg-accent-editorial text-white truncate cursor-pointer hover:opacity-90 block"
                             >
-                              {b.startTime} {b.firstName} ({b.practitionerName.split(' ')[0]})
+                              {b.startTime} {b.firstName} ({b.practitionerName ? b.practitionerName.split(' ')[0] : ''})
                             </button>
                           ))}
 
@@ -1703,7 +1703,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   >
                     {practitioners.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.role.split('•')[0].trim()})
+                        {p.name} ({p.role ? p.role.split('•')[0].trim() : 'Practitioner'})
                       </option>
                     ))}
                   </select>
@@ -2210,7 +2210,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <div className="space-y-0.5">
                             <span className="font-semibold text-main">{p.name}</span>
                             <div className="text-[11px] text-muted-editorial">
-                              {p.role.split('•')[0].trim()} &bull; {p.email}
+                              {p.role ? p.role.split('•')[0].trim() : 'Practitioner'} &bull; {p.email}
                             </div>
                           </div>
 

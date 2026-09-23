@@ -475,17 +475,27 @@ class StorageService {
   }
 
   public setCurrentSession(session: UserSession | null): void {
-    if (session) {
-      sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
-      sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'authenticated');
-    } else {
-      sessionStorage.removeItem(STORAGE_KEYS.CURRENT_SESSION);
-      sessionStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+    try {
+      if (typeof sessionStorage === 'undefined') return;
+      if (session) {
+        sessionStorage.setItem(STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
+        sessionStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'authenticated');
+      } else {
+        sessionStorage.removeItem(STORAGE_KEYS.CURRENT_SESSION);
+        sessionStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+      }
+    } catch (e) {
+      console.warn('sessionStorage is not accessible:', e);
     }
   }
 
   public isAdminAuthenticated(): boolean {
-    return !!this.getCurrentSession() || sessionStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'authenticated';
+    try {
+      if (typeof sessionStorage === 'undefined') return false;
+      return !!this.getCurrentSession() || sessionStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'authenticated';
+    } catch {
+      return false;
+    }
   }
 
   public loginUser(accountId: string, password: string): { success: boolean; session?: UserSession; error?: string } {

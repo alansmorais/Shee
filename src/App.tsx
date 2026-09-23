@@ -27,24 +27,26 @@ export default function App() {
   const theme = 'light';
 
   // Navigation View: 'home' | 'women' | 'men' | 'workshops' | 'admin'
-  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin'>(() => {
+    if (typeof window !== 'undefined') {
+      const h = window.location.hash;
+      if (h === '#admin') return 'admin';
+      if (h === '#workshops' || h === '#workshop') return 'workshops';
+      if (h === '#women') return 'women';
+      if (h === '#men') return 'men';
+    }
+    return 'home';
+  });
 
   // Data Store State
-  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [workshops, setWorkshops] = useState<Workshop[]>([]);
-  const [weeklySchedules, setWeeklySchedules] = useState<Record<string, DaySchedule[]>>({});
-  const [specificAvailabilities, setSpecificAvailabilities] = useState<SpecificAvailability[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [reviews, setReviews] = useState<ReviewItem[]>([]);
-  const [adminSettings, setAdminSettings] = useState<AdminSettings>({
-    googleScriptUrl: '',
-    adminEmail: 'contact@sheacademy.no',
-    sendClientEmails: true,
-    sendAdminEmails: true,
-    currencySymbol: ' kr',
-    defaultBufferMinutes: 15,
-  });
+  const [practitioners, setPractitioners] = useState<Practitioner[]>(() => storageService.getPractitioners());
+  const [services, setServices] = useState<Service[]>(() => storageService.getServices());
+  const [workshops, setWorkshops] = useState<Workshop[]>(() => storageService.getWorkshops());
+  const [weeklySchedules, setWeeklySchedules] = useState<Record<string, DaySchedule[]>>(() => storageService.getWeeklySchedules());
+  const [specificAvailabilities, setSpecificAvailabilities] = useState<SpecificAvailability[]>(() => storageService.getSpecificAvailabilities());
+  const [bookings, setBookings] = useState<Booking[]>(() => storageService.getBookings());
+  const [reviews, setReviews] = useState<ReviewItem[]>(() => storageService.getReviews());
+  const [adminSettings, setAdminSettings] = useState<AdminSettings>(() => storageService.getSettings());
 
   // Modal / Drawer Overlays
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -109,11 +111,23 @@ export default function App() {
     // Force light theme
     document.documentElement.setAttribute('data-theme', 'light');
 
-    // Check URL hash for direct admin routing (e.g. #admin)
-    const hash = window.location.hash;
-    if (hash === '#admin') {
-      setCurrentView('admin');
-    }
+    // Check URL hash for direct admin routing (e.g. #admin, #workshops)
+    const handleHashSync = () => {
+      const h = window.location.hash;
+      if (h === '#admin') {
+        setCurrentView('admin');
+      } else if (h === '#workshops' || h === '#workshop') {
+        setCurrentView('workshops');
+      } else if (h === '#women') {
+        setCurrentView('women');
+      } else if (h === '#men') {
+        setCurrentView('men');
+      }
+    };
+
+    handleHashSync();
+    window.addEventListener('hashchange', handleHashSync);
+    return () => window.removeEventListener('hashchange', handleHashSync);
   }, [loadData, fetchGoogleReviews]);
 
   // Dynamic SEO updater per view
