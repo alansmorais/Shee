@@ -65,26 +65,22 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Automatic GitHub Pages router & source check -->
+    <!-- Automatic GitHub Pages / Static Hosting router -->
     <script type="text/javascript">
-      // Only execute fallback redirect if uncompiled source TypeScript is referenced
-      if (document.querySelector('script[src*="src/main.tsx"]')) {
-        if (window.location.hostname.endsWith('github.io') && !window.location.pathname.includes('/docs/')) {
-          var base = window.location.pathname.replace(/\/+$/, '');
-          window.location.replace(base + '/docs/' + window.location.search + window.location.hash);
-        } else if (window.location.protocol === 'file:') {
-          setTimeout(function() {
-            if (!document.getElementById('root').hasChildNodes()) {
-              document.getElementById('root').innerHTML = `
-                <div style="font-family: sans-serif; padding: 40px; text-align: center; color: #333;">
-                  <h2 style="color: #c5a47e;">Local File Notice</h2>
-                  <p>To run locally, please open the compiled <strong>docs/index.html</strong> file directly.</p>
-                </div>
-              `;
-            }
-          }, 2000);
+      (function() {
+        // Only run redirect if this is the uncompiled source file containing /src/main.tsx
+        var isUncompiledSource = !!document.querySelector('script[src*="src/main.tsx"]');
+        var host = window.location.hostname;
+        var isDevServer = host === 'localhost' || host === '127.0.0.1' || host.includes('.run.app') || window.location.port === '3000';
+        
+        // If uncompiled source is served on static hosting (e.g. GitHub Pages set to / root)
+        if (isUncompiledSource && !isDevServer) {
+          if (!window.location.pathname.includes('/docs/')) {
+            var base = window.location.pathname.replace(/\/+$/, '');
+            window.location.replace((base ? base : '') + '/docs/' + window.location.search + window.location.hash);
+          }
         }
-      }
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

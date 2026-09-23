@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SHE Academy</title>
+    <script type="text/javascript">
+      var path = window.location.pathname;
+      var search = window.location.search;
+      var hash = window.location.hash;
+      
+      if (path.includes('/docs/')) {
+        window.location.replace('/docs/' + search + hash);
+      } else {
+        window.location.replace('/' + search + hash);
+      }
+    </script>
+  </head>
+  <body>
+    <div style="font-family: sans-serif; text-align: center; padding: 50px; color: #32231F;">
+      <h2>Redirecting to SHE Academy...</h2>
+      <p><a href="/" style="color: #B05B43;">Click here if not redirected automatically.</a></p>
+    </div>
+  </body>
+</html>
