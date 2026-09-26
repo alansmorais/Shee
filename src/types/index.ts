@@ -121,6 +121,7 @@ export interface ReviewItem {
 
 export interface AdminSettings {
   googleScriptUrl: string;
+  workshopScriptUrl?: string;
   adminEmail: string;
   developerPassword?: string;
   sendClientEmails: boolean;
@@ -128,6 +129,7 @@ export interface AdminSettings {
   currencySymbol: string;
   defaultBufferMinutes: number;
   lastSynced?: string;
+  lastWorkshopSynced?: string;
 }
 
 export interface UserSession {

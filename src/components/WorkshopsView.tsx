@@ -79,6 +79,50 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                       {w.location && (
                         <p className="text-xs text-muted-editorial font-light mt-1">{w.location}</p>
                       )}
+                      {w.title.toLowerCase().includes('play with me 1') && (
+                        <div className="mt-2.5">
+                          <a
+                            href="#play-with-me-1"
+                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
+                          >
+                            <span>📖 Learn More &amp; View Details</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </a>
+                        </div>
+                      )}
+                      {(w.title.toLowerCase().includes('pleasing a woman') || w.title.toLowerCase().includes('potěšit ženu')) && (
+                        <div className="mt-2.5">
+                          <a
+                            href="#art-of-pleasing-woman"
+                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
+                          >
+                            <span>📖 Learn More &amp; View Details</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </a>
+                        </div>
+                      )}
+                      {(w.title.toLowerCase().includes('pleasing a man') || w.title.toLowerCase().includes('potěšit muže') || w.title.toLowerCase().includes('please a man')) && (
+                        <div className="mt-2.5">
+                          <a
+                            href="#how-to-please-a-man"
+                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
+                          >
+                            <span>📖 Learn More &amp; View Details</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </a>
+                        </div>
+                      )}
+                      {(w.title.toLowerCase().includes('for couples') || w.title.toLowerCase().includes('pro páry')) && (
+                        <div className="mt-2.5">
+                          <a
+                            href="#art-of-pleasing-couples"
+                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
+                          >
+                            <span>📖 Learn More &amp; View Details</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
 

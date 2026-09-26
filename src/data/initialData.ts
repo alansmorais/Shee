@@ -472,6 +472,7 @@ export const INITIAL_REVIEWS: ReviewItem[] = [];
 
 export const INITIAL_SETTINGS: AdminSettings = {
   googleScriptUrl: 'https://script.google.com/macros/s/AKfycbwiptZDdNVNSavoyJeHCvoc7XxOSTG0yg_K5Z-Si81Up_4CSBo5AJUUOuMYLNh2eT3h/exec',
+  workshopScriptUrl: 'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec',
   adminEmail: 'contact@sheacademy.no',
   developerPassword: 'she-dev-2026',
   sendClientEmails: true,

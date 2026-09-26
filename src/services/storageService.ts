@@ -208,6 +208,162 @@ class StorageService {
     this.saveWorkshops(list);
   }
 
+  // Workshop Google Sheets Synchronization (WorkshopDates Sheet: Col A = Language, Col B = DatesJSON)
+  public async syncWorkshopsToGoogleSheets(
+    workshops: Workshop[],
+    lang: string = 'SHE'
+  ): Promise<{ success: boolean; message: string }> {
+    const settings = this.getSettings();
+    const url =
+      settings.workshopScriptUrl ||
+      'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec';
+
+    if (!url) {
+      return { success: false, message: 'Google Apps Script URL is not configured.' };
+    }
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'sync_workshops',
+          lang: lang.toUpperCase(),
+          workshops: workshops.map((w) => ({
+            date: w.date,
+            title: w.title,
+          })),
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      this.saveSettings({
+        ...settings,
+        lastWorkshopSynced: new Date().toISOString(),
+      });
+
+      return {
+        success: true,
+        message: `Successfully synchronized ${workshops.length} workshops to Google Sheet "WorkshopDates" (Row [${lang}] DatesJSON in Column B).`,
+      };
+    } catch (error) {
+      console.warn('Failed to sync workshops to Google Sheets:', error);
+      return {
+        success: false,
+        message: 'Could not connect to Google Apps Script. Please verify the URL.',
+      };
+    }
+  }
+
+  public async addWorkshopToGoogleSheets(
+    workshop: Partial<Workshop>,
+    lang: string = 'SHE'
+  ): Promise<{ success: boolean; message: string }> {
+    const settings = this.getSettings();
+    const url =
+      settings.workshopScriptUrl ||
+      'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec';
+
+    if (!url) {
+      return { success: false, message: 'Google Apps Script URL is not configured.' };
+    }
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'add_workshop',
+          lang: lang.toUpperCase(),
+          workshop: {
+            date: workshop.date || '',
+            title: workshop.title || '',
+          },
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      return {
+        success: true,
+        message: `Workshop added to Google Sheet "WorkshopDates" (Row [${lang}], Column B).`,
+      };
+    } catch (error) {
+      console.warn('Failed to add workshop to Google Sheets:', error);
+      return {
+        success: false,
+        message: 'Could not connect to Google Apps Script.',
+      };
+    }
+  }
+
+  public async fetchWorkshopsFromGoogleSheets(
+    lang: string = 'SHE'
+  ): Promise<{ success: boolean; items: string[]; message?: string }> {
+    const settings = this.getSettings();
+    const baseUrl =
+      settings.workshopScriptUrl ||
+      'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec';
+
+    if (!baseUrl) {
+      return { success: false, items: [], message: 'Google Apps Script URL is not configured.' };
+    }
+
+    try {
+      const url = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}format=json&action=get_workshops`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const json = await res.json();
+      if (json && json.data && json.data[lang.toUpperCase()]) {
+        return { success: true, items: json.data[lang.toUpperCase()] };
+      }
+      return { success: true, items: [] };
+    } catch (error) {
+      console.warn('Failed to fetch from Google Sheets:', error);
+      return {
+        success: false,
+        items: [],
+        message: 'Could not load data from Google Apps Script Web App.',
+      };
+    }
+  }
+
+  public async initializeGoogleSheetsTabs(): Promise<{ success: boolean; message: string }> {
+    const settings = this.getSettings();
+    const url =
+      settings.workshopScriptUrl ||
+      'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec';
+
+    if (!url) {
+      return { success: false, message: 'Google Apps Script URL is not configured.' };
+    }
+
+    try {
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'init_tabs',
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      return {
+        success: true,
+        message: 'Auto-create command sent! Sheet "WorkshopDates" (Headers: Language & DatesJSON | Rows: EN, NO, CZ, SHE) will be initialized.',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Could not connect to Google Apps Script.',
+      };
+    }
+  }
+
   public getFeedback(): FeedbackItem[] {
     return this.get<FeedbackItem[]>(STORAGE_KEYS.FEEDBACK, []);
   }

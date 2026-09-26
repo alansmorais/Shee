@@ -17,6 +17,10 @@ import { HomeView } from './components/HomeView';
 import { ForWomenView } from './components/ForWomenView';
 import { ForMenView } from './components/ForMenView';
 import { WorkshopsView } from './components/WorkshopsView';
+import { PlayWithMe1View } from './components/PlayWithMe1View';
+import { ArtOfPleasingWomanView } from './components/ArtOfPleasingWomanView';
+import { HowToPleaseManView } from './components/HowToPleaseManView';
+import { ArtOfPleasingCouplesView } from './components/ArtOfPleasingCouplesView';
 import { BookingModal } from './components/BookingModal';
 import { FeedbackDrawer } from './components/FeedbackDrawer';
 import { ContactModal } from './components/ContactModal';
@@ -26,14 +30,18 @@ export default function App() {
   // Force Light Theme Only
   const theme = 'light';
 
-  // Navigation View: 'home' | 'women' | 'men' | 'workshops' | 'admin'
-  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin'>(() => {
+  // Navigation View: 'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples'
+  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples'>(() => {
     if (typeof window !== 'undefined') {
       const h = window.location.hash;
       if (h === '#admin') return 'admin';
       if (h === '#workshops' || h === '#workshop') return 'workshops';
       if (h === '#women') return 'women';
       if (h === '#men') return 'men';
+      if (h === '#play-with-me-1' || h === '#play-with-me') return 'play-with-me-1';
+      if (h === '#art-of-pleasing-woman' || h === '#pleasing-woman') return 'art-of-pleasing-woman';
+      if (h === '#how-to-please-a-man' || h === '#pleasing-man') return 'how-to-please-a-man';
+      if (h === '#art-of-pleasing-couples' || h === '#pleasing-couples') return 'art-of-pleasing-couples';
     }
     return 'home';
   });
@@ -122,6 +130,14 @@ export default function App() {
         setCurrentView('women');
       } else if (h === '#men') {
         setCurrentView('men');
+      } else if (h === '#play-with-me-1' || h === '#play-with-me') {
+        setCurrentView('play-with-me-1');
+      } else if (h === '#art-of-pleasing-woman' || h === '#pleasing-woman') {
+        setCurrentView('art-of-pleasing-woman');
+      } else if (h === '#how-to-please-a-man' || h === '#pleasing-man') {
+        setCurrentView('how-to-please-a-man');
+      } else if (h === '#art-of-pleasing-couples' || h === '#pleasing-couples') {
+        setCurrentView('art-of-pleasing-couples');
       }
     };
 
@@ -152,6 +168,22 @@ export default function App() {
       admin: {
         title: 'Admin Dashboard | SHE. Academy',
         description: 'SHE. Academy administration and booking management dashboard.',
+      },
+      'play-with-me-1': {
+        title: 'Play with Me – Level 1 | Intimacy & Somatic Retreat',
+        description: 'A three-day sensory journey to the roots of your authentic desires, led by Daniela Torp and Bas van der Tang at Tantracentrum Kameňák.',
+      },
+      'art-of-pleasing-woman': {
+        title: 'The Art of Pleasing a Woman | Somatic Men\'s Masterclass',
+        description: 'Learn erogenous mapping, conscious slow touch, and understand the deep differences of female desire with Daniela Torp.',
+      },
+      'how-to-please-a-man': {
+        title: 'How to Please a Man | Somatic Intimacy Masterclass',
+        description: 'Learn sacred male touch structures, male pelvic reflex points, and relieving performance pressures with Daniela Torp.',
+      },
+      'art-of-pleasing-couples': {
+        title: 'The Art of Pleasing (For Couples) | Somatic Relationship Retreat',
+        description: 'Conscious partner communication, deep healing touch, reawakening passion, and daily life integration with Daniela Torp in Oslo.',
       },
     };
 
@@ -202,12 +234,20 @@ export default function App() {
   };
 
   // View Navigation
-  const handleNavigate = (view: 'home' | 'women' | 'men' | 'workshops' | 'admin', targetId?: string) => {
+  const handleNavigate = (view: 'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples', targetId?: string) => {
     setCurrentView(view);
     if (view === 'admin') {
       window.location.hash = 'admin';
+    } else if (view === 'play-with-me-1') {
+      window.location.hash = 'play-with-me-1';
+    } else if (view === 'art-of-pleasing-woman') {
+      window.location.hash = 'art-of-pleasing-woman';
+    } else if (view === 'how-to-please-a-man') {
+      window.location.hash = 'how-to-please-a-man';
+    } else if (view === 'art-of-pleasing-couples') {
+      window.location.hash = 'art-of-pleasing-couples';
     } else {
-      if (window.location.hash === '#admin') {
+      if (window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
         history.pushState(null, '', ' ');
       }
     }
@@ -308,6 +348,34 @@ export default function App() {
           <WorkshopsView
             workshops={workshops}
             onOpenBooking={handleOpenBooking}
+            onOpenContact={handleOpenContact}
+          />
+        )}
+
+        {currentView === 'play-with-me-1' && (
+          <PlayWithMe1View
+            onNavigate={(v) => handleNavigate(v)}
+            onOpenContact={handleOpenContact}
+          />
+        )}
+
+        {currentView === 'art-of-pleasing-woman' && (
+          <ArtOfPleasingWomanView
+            onNavigate={(v) => handleNavigate(v)}
+            onOpenContact={handleOpenContact}
+          />
+        )}
+
+        {currentView === 'how-to-please-a-man' && (
+          <HowToPleaseManView
+            onNavigate={(v) => handleNavigate(v)}
+            onOpenContact={handleOpenContact}
+          />
+        )}
+
+        {currentView === 'art-of-pleasing-couples' && (
+          <ArtOfPleasingCouplesView
+            onNavigate={(v) => handleNavigate(v)}
             onOpenContact={handleOpenContact}
           />
         )}

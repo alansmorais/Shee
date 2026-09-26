@@ -155,7 +155,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                         key={w.id}
                         type="button"
                         onClick={() => {
-                          handleNavClick('workshops', w.id);
+                          if (w.title.toLowerCase().includes('play with me 1')) {
+                            handleNavClick('play-with-me-1');
+                          } else if (w.title.toLowerCase().includes('pleasing a woman') || w.title.toLowerCase().includes('potěšit ženu')) {
+                            handleNavClick('art-of-pleasing-woman');
+                          } else if (w.title.toLowerCase().includes('pleasing a man') || w.title.toLowerCase().includes('potěšit muže') || w.title.toLowerCase().includes('please a man')) {
+                            handleNavClick('how-to-please-a-man');
+                          } else if (w.title.toLowerCase().includes('for couples') || w.title.toLowerCase().includes('pro páry')) {
+                            handleNavClick('art-of-pleasing-couples');
+                          } else {
+                            handleNavClick('workshops', w.id);
+                          }
                           setWorkshopsDropdownOpen(false);
                         }}
                         className="w-full text-left p-2 rounded-xl hover:bg-alt/70 transition-colors flex items-start space-x-2.5 group cursor-pointer"
@@ -211,6 +221,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             Contact
           </button>
+
+
 
           <button
             type="button"
@@ -312,7 +324,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <button
                       key={`mobile-${w.id}`}
                       type="button"
-                      onClick={() => handleNavClick('workshops', w.id)}
+                      onClick={() => {
+                        if (w.title.toLowerCase().includes('play with me 1')) {
+                          handleNavClick('play-with-me-1');
+                        } else if (w.title.toLowerCase().includes('pleasing a woman') || w.title.toLowerCase().includes('potěšit ženu')) {
+                          handleNavClick('art-of-pleasing-woman');
+                        } else if (w.title.toLowerCase().includes('pleasing a man') || w.title.toLowerCase().includes('potěšit muže') || w.title.toLowerCase().includes('please a man')) {
+                          handleNavClick('how-to-please-a-man');
+                        } else if (w.title.toLowerCase().includes('for couples') || w.title.toLowerCase().includes('pro páry')) {
+                          handleNavClick('art-of-pleasing-couples');
+                        } else {
+                          handleNavClick('workshops', w.id);
+                        }
+                      }}
                       className="w-full text-left py-1 text-xs text-muted-editorial hover:text-accent-editorial flex flex-col cursor-pointer"
                     >
                       <span className="text-[10px] font-mono text-accent-editorial font-medium">{w.date}</span>

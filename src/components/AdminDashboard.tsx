@@ -12,7 +12,7 @@ import {
   Workshop,
 } from '../types';
 import { storageService } from '../services/storageService';
-import { GOOGLE_APPS_SCRIPT_CODE } from '../data/backendScript';
+import { GOOGLE_APPS_SCRIPT_CODE, WORKSHOP_DATES_MANAGER_APPS_SCRIPT } from '../data/backendScript';
 import {
   Calendar as CalendarIcon,
   Users,
@@ -46,6 +46,9 @@ import {
   Activity,
   RefreshCw,
   Code2,
+  Upload,
+  Download,
+  Globe,
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -103,6 +106,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [editingWorkshop, setEditingWorkshop] = useState<Partial<Workshop> | null>(null);
   const [workshopCurriculumInput, setWorkshopCurriculumInput] = useState<string>('');
 
+  // Google Sheets Workshop Sync State (Column A, Row 5 - 4 Websites: EN, CZ, NO, SHE)
+  const [selectedSheetLang, setSelectedSheetLang] = useState<'EN' | 'CZ' | 'NO' | 'SHE' | 'ALL'>('SHE');
+  const [isSyncingWorkshops, setIsSyncingWorkshops] = useState(false);
+  const [workshopSyncNotice, setWorkshopSyncNotice] = useState<string | null>(null);
+  const [showWorkshopScriptModal, setShowWorkshopScriptModal] = useState(false);
+  const [isCopyingWorkshopScript, setIsCopyingWorkshopScript] = useState(false);
+  const [alsoSyncToSheet, setAlsoSyncToSheet] = useState(true);
+  const [tempWorkshopScriptUrl, setTempWorkshopScriptUrl] = useState(
+    settings.workshopScriptUrl || 'https://script.google.com/macros/s/AKfycbwrA4qfZdmzOWaRdbIgtDqL0VO5NpURvNBU-5GdnmJ__3cBPbK4Hy-b5vkn1P0FJo0F/exec'
+  );
+  const [codeViewerTab, setCodeViewerTab] = useState<'bookings' | 'workshops'>('workshops');
+
   // Keep workshops synced with prop if updated
   React.useEffect(() => {
     if (workshops && workshops.length > 0) {
@@ -148,9 +163,61 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       storageService.addWorkshop(workshopData);
     }
 
+    if (alsoSyncToSheet) {
+      storageService.addWorkshopToGoogleSheets(workshopData, selectedSheetLang).catch((err) =>
+        console.warn('Auto-push workshop failed:', err)
+      );
+    }
+
     setWorkshopsList(storageService.getWorkshops());
     setEditingWorkshop(null);
     onRefreshData();
+  };
+
+  const handlePushWorkshopsToSheet = async () => {
+    setIsSyncingWorkshops(true);
+    setWorkshopSyncNotice(null);
+    try {
+      const res = await storageService.syncWorkshopsToGoogleSheets(workshopsList, selectedSheetLang);
+      setWorkshopSyncNotice(res.message);
+    } catch {
+      setWorkshopSyncNotice('Failed to push workshops to Google Sheets.');
+    } finally {
+      setIsSyncingWorkshops(false);
+      setTimeout(() => setWorkshopSyncNotice(null), 6000);
+    }
+  };
+
+  const handlePullWorkshopsFromSheet = async () => {
+    setIsSyncingWorkshops(true);
+    setWorkshopSyncNotice(null);
+    try {
+      const res = await storageService.fetchWorkshopsFromGoogleSheets(selectedSheetLang);
+      if (res.success && res.items.length > 0) {
+        setWorkshopSyncNotice(`Found ${res.items.length} date entries in Google Sheets [${selectedSheetLang} tab, Row 5+].`);
+      } else {
+        setWorkshopSyncNotice(res.message || `No date entries found in [${selectedSheetLang} tab, Row 5+].`);
+      }
+    } catch {
+      setWorkshopSyncNotice('Could not connect directly to Google Apps Script. Check URL permissions.');
+    } finally {
+      setIsSyncingWorkshops(false);
+      setTimeout(() => setWorkshopSyncNotice(null), 6000);
+    }
+  };
+
+  const handleInitAllTabs = async () => {
+    setIsSyncingWorkshops(true);
+    setWorkshopSyncNotice(null);
+    try {
+      const res = await storageService.initializeGoogleSheetsTabs();
+      setWorkshopSyncNotice(res.message);
+    } catch {
+      setWorkshopSyncNotice('Failed to initialize tabs in Google Sheets.');
+    } finally {
+      setIsSyncingWorkshops(false);
+      setTimeout(() => setWorkshopSyncNotice(null), 6000);
+    }
   };
 
   const handleDeleteWorkshop = (id: string, title: string) => {
@@ -428,6 +495,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     storageService.saveSettings({
       ...settings,
       googleScriptUrl: tempGoogleUrl.trim(),
+      workshopScriptUrl: tempWorkshopScriptUrl.trim(),
       adminEmail: tempAdminEmail.trim(),
       lastSynced: new Date().toISOString(),
     });
@@ -1546,6 +1614,110 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </button>
             </div>
 
+            {/* Google Sheets Sync Bar (WorkshopDates Sheet: Col A Language, Col B DatesJSON) */}
+            <div className="rounded-2xl border border-line bg-card p-5 space-y-4 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h4 className="font-serif text-lg text-main font-normal">
+                      Google Sheets Integration
+                    </h4>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-500/20">
+                      Tab: WorkshopDates &bull; Col A: Language &bull; Col B: DatesJSON
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-editorial">
+                    Directly syncs workshop dates into your <code className="text-accent-editorial">WorkshopDates</code> sheet: Column A has Language codes (<strong className="text-main">EN</strong> Row 2, <strong className="text-main">NO</strong> Row 3, <strong className="text-main">CZ</strong> Row 4, <strong className="text-main">SHE</strong> Row 5) and Column B stores <code className="text-accent-editorial">DatesJSON</code>. Missing tabs or headers are auto-created.
+                  </p>
+                </div>
+
+                {/* 4 Websites tab selector */}
+                <div className="flex flex-wrap items-center space-x-1 p-1 rounded-xl bg-alt/60 border border-line text-xs">
+                  <span className="text-[11px] text-muted-editorial px-2 font-medium">Target Website:</span>
+                  {[
+                    { id: 'SHE' as const, label: '🌸 SHE', desc: 'Row 5: sheacademy.no' },
+                    { id: 'NO' as const, label: '🇳🇴 NO', desc: 'Row 3: .no' },
+                    { id: 'EN' as const, label: '🇬🇧 EN', desc: 'Row 2: .com' },
+                    { id: 'CZ' as const, label: '🇨🇿 CZ', desc: 'Row 4: .cz' },
+                    { id: 'ALL' as const, label: '🌐 All 4 Sites', desc: 'All rows' },
+                  ].map((site) => (
+                    <button
+                      key={site.id}
+                      type="button"
+                      onClick={() => setSelectedSheetLang(site.id)}
+                      className={`px-3 py-1.5 rounded-lg font-medium cursor-pointer transition-colors ${
+                        selectedSheetLang === site.id
+                          ? 'bg-accent-editorial text-white shadow-xs'
+                          : 'text-muted-editorial hover:text-main'
+                      }`}
+                      title={`${site.label} (${site.desc})`}
+                    >
+                      {site.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action buttons & status */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-line">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isSyncingWorkshops}
+                    onClick={handlePushWorkshopsToSheet}
+                    className="px-4 py-2 rounded-full text-xs uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer shadow-xs inline-flex items-center space-x-2 transition-opacity disabled:opacity-50"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{isSyncingWorkshops ? 'Pushing...' : `Push to Sheet [${selectedSheetLang}]`}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSyncingWorkshops}
+                    onClick={handlePullWorkshopsFromSheet}
+                    className="px-4 py-2 rounded-full text-xs uppercase tracking-widest border border-line text-main hover:border-main font-medium cursor-pointer inline-flex items-center space-x-2 transition-colors disabled:opacity-50"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Check Sheet Data</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSyncingWorkshops}
+                    onClick={handleInitAllTabs}
+                    className="px-3.5 py-2 rounded-full text-xs uppercase tracking-widest border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-medium cursor-pointer inline-flex items-center space-x-1.5 transition-colors disabled:opacity-50"
+                    title="Automatically checks or creates WorkshopDates sheet with Language and DatesJSON headers"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                    <span>Auto-Create Sheet &amp; Headers</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowWorkshopScriptModal(true)}
+                    className="px-3 py-2 rounded-full text-xs uppercase tracking-widest text-accent-editorial hover:underline font-medium cursor-pointer inline-flex items-center space-x-1.5"
+                  >
+                    <Code2 className="w-3.5 h-3.5" />
+                    <span>View Apps Script Code</span>
+                  </button>
+                </div>
+
+                <div className="text-[11px] text-muted-editorial font-mono">
+                  {settings.lastWorkshopSynced
+                    ? `Last pushed: ${new Date(settings.lastWorkshopSynced).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                    : 'Ready to sync'}
+                </div>
+              </div>
+
+              {workshopSyncNotice && (
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs flex items-center space-x-2 animate-fadeIn">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{workshopSyncNotice}</span>
+                </div>
+              )}
+            </div>
+
             {/* If no workshops */}
             {workshopsList.length === 0 ? (
               <div className="rounded-2xl border border-line bg-card p-10 text-center space-y-4 max-w-xl mx-auto shadow-xs">
@@ -2062,7 +2234,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <form onSubmit={handleSaveSettings} className="space-y-4">
                     <div>
                       <label className="block text-xs uppercase tracking-widest text-muted-editorial font-medium mb-1.5">
-                        Google Apps Script Web App URL
+                        Google Apps Script Web App URL (Bookings, Contact & Feedback)
                       </label>
                       <input
                         type="url"
@@ -2071,6 +2243,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
                         className="w-full px-4 py-2.5 rounded-xl border border-line bg-main text-main text-xs font-mono focus:outline-none focus:border-accent-editorial"
                       />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="block text-xs uppercase tracking-widest text-muted-editorial font-medium">
+                          Workshop Dates Manager Script URL
+                        </label>
+                        <span className="text-[10px] text-accent-editorial font-medium">Sheet: WorkshopDates (Col A: Language, Col B: DatesJSON)</span>
+                      </div>
+                      <input
+                        type="url"
+                        value={tempWorkshopScriptUrl}
+                        onChange={(e) => setTempWorkshopScriptUrl(e.target.value)}
+                        placeholder="https://script.google.com/macros/s/AKfycbw.../exec"
+                        className="w-full px-4 py-2.5 rounded-xl border border-line bg-main text-main text-xs font-mono focus:outline-none focus:border-accent-editorial"
+                      />
+                      <p className="text-[11px] text-muted-editorial mt-1">
+                        Connects to your <strong className="text-main">WorkshopDates</strong> Google Sheet tab. Synchronizes dates across your 4 websites: <strong className="text-main">EN</strong> (Row 2), <strong className="text-main">NO</strong> (Row 3), <strong className="text-main">CZ</strong> (Row 4), and <strong className="text-main">SHE</strong> (Row 5). Missing headers and rows are generated automatically.
+                      </p>
                     </div>
 
                     <div>
@@ -2115,24 +2306,53 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   
                   {/* Backend Code Viewer */}
                   <div className="mt-8 pt-8 border-t border-line space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center space-x-3">
                         <Code2 className="w-5 h-5 text-accent-editorial" />
                         <h4 className="font-serif text-lg text-main">Google Apps Script Backend Code</h4>
                       </div>
+
+                      {/* Script selector tabs */}
+                      <div className="flex items-center space-x-1 p-1 rounded-xl bg-main border border-line text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setCodeViewerTab('workshops')}
+                          className={`px-3 py-1 rounded-lg font-medium cursor-pointer transition-colors ${
+                            codeViewerTab === 'workshops'
+                              ? 'bg-accent-editorial text-white'
+                              : 'text-muted-editorial hover:text-main'
+                          }`}
+                        >
+                          Workshops (Col A, Row 5)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCodeViewerTab('bookings')}
+                          className={`px-3 py-1 rounded-lg font-medium cursor-pointer transition-colors ${
+                            codeViewerTab === 'bookings'
+                              ? 'bg-accent-editorial text-white'
+                              : 'text-muted-editorial hover:text-main'
+                          }`}
+                        >
+                          Bookings & System
+                        </button>
+                      </div>
+
                       <button
                         onClick={() => {
-                          if (backendCode) {
-                            navigator.clipboard.writeText(backendCode);
-                            setIsCopyingBackendCode(true);
-                            setTimeout(() => setIsCopyingBackendCode(false), 2000);
-                          }
+                          const codeToCopy =
+                            codeViewerTab === 'workshops'
+                              ? WORKSHOP_DATES_MANAGER_APPS_SCRIPT
+                              : (backendCode || GOOGLE_APPS_SCRIPT_CODE);
+                          navigator.clipboard.writeText(codeToCopy);
+                          setIsCopyingBackendCode(true);
+                          setTimeout(() => setIsCopyingBackendCode(false), 2000);
                         }}
-                        className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest bg-main border border-line text-muted-editorial hover:border-accent-editorial hover:text-accent-editorial transition-colors flex items-center space-x-2"
+                        className="px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest bg-main border border-line text-muted-editorial hover:border-accent-editorial hover:text-accent-editorial transition-colors flex items-center space-x-2 self-start sm:self-auto cursor-pointer"
                       >
                         {isCopyingBackendCode ? (
                           <>
-                            <CheckCircle2 className="w-3 h-3" />
+                            <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                             <span>Copied!</span>
                           </>
                         ) : (
@@ -2143,12 +2363,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         )}
                       </button>
                     </div>
+
                     <p className="text-xs text-muted-editorial leading-relaxed">
-                      Copy this entire script and paste it into your Google Apps Script editor. This version includes <strong>Concurrency Locking</strong> and <strong>Practitioner Email Routing</strong>.
+                      {codeViewerTab === 'workshops' ? (
+                        <>
+                          This script is tailored specifically for your <strong>Workshop Dates Manager</strong> Google Sheet (Tabs <code>EN</code>, <code>CZ</code>, <code>NO</code>, <code>SHE</code> | Column A, Row 5+). Paste this into <strong>Extensions &gt; Apps Script</strong> and deploy as Web App. Missing tabs or headers are auto-created.
+                        </>
+                      ) : (
+                        <>
+                          This script handles <strong>Client Bookings</strong>, <strong>Contact Inquiries</strong>, and <strong>Feedback</strong> with concurrency locking and practitioner routing.
+                        </>
+                      )}
                     </p>
+
                     <div className="relative">
                       <pre className="p-4 rounded-xl bg-main border border-line text-[10px] font-mono text-muted-editorial overflow-auto max-h-[300px] whitespace-pre">
-                        {backendCode || 'Loading script content...'}
+                        {codeViewerTab === 'workshops'
+                          ? WORKSHOP_DATES_MANAGER_APPS_SCRIPT
+                          : (backendCode || GOOGLE_APPS_SCRIPT_CODE)}
                       </pre>
                       <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-main to-transparent pointer-events-none rounded-b-xl" />
                     </div>
@@ -2938,6 +3170,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               </div>
 
+              {/* Google Sheets Sync Option (Column A, Row 5) */}
+              <div className="p-3.5 rounded-xl bg-alt/50 border border-line flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <div className="flex items-center space-x-2">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span className="font-medium text-main text-xs">Sync with Google Sheets</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-mono">
+                      Col A, Row 5+
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-editorial">
+                    Automatically pushes this workshop date and title to your connected spreadsheet ({selectedSheetLang} tab).
+                  </p>
+                </div>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={alsoSyncToSheet}
+                    onChange={(e) => setAlsoSyncToSheet(e.target.checked)}
+                    className="rounded text-accent-editorial focus:ring-accent-editorial cursor-pointer"
+                  />
+                  <span className="text-xs text-main font-medium">Auto-push</span>
+                </label>
+              </div>
+
               <div className="pt-4 border-t border-line flex items-center justify-end space-x-3">
                 <button
                   type="button"
@@ -3063,6 +3320,142 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Workshop Dates Manager Apps Script Modal */}
+      {showWorkshopScriptModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-card border border-line rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl my-8">
+            <div className="flex items-center justify-between border-b border-line pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <FileSpreadsheet className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-serif text-2xl text-main font-normal">
+                    Workshop Dates Manager Script
+                  </h4>
+                  <p className="text-xs text-muted-editorial">
+                    For 4 Websites: <code className="text-accent-editorial">EN (.com)</code>, <code className="text-accent-editorial">NO (.no)</code>, <code className="text-accent-editorial">CZ (.cz)</code>, <code className="text-accent-editorial">SHE (sheacademy.no)</code>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowWorkshopScriptModal(false)}
+                className="p-1.5 rounded-lg text-muted-editorial hover:text-main cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs text-muted-editorial leading-relaxed">
+              {/* Visual Layout Table matching the Google Sheet */}
+              <div className="p-3.5 rounded-xl bg-alt/40 border border-line space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-mono font-medium text-emerald-700 dark:text-emerald-300">
+                  <span>Google Sheet Layout: Tab "WorkshopDates"</span>
+                  <span className="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Auto-Created if Missing</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[11px] font-mono border-collapse border border-line text-left bg-card rounded-lg">
+                    <thead>
+                      <tr className="bg-alt/70 text-main">
+                        <th className="p-1.5 border border-line w-14 text-center">Row</th>
+                        <th className="p-1.5 border border-line w-28">Col A (Language)</th>
+                        <th className="p-1.5 border border-line">Col B (DatesJSON)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-muted-editorial">
+                      <tr className="bg-alt/30">
+                        <td className="p-1.5 border border-line text-center font-bold text-main">1</td>
+                        <td className="p-1.5 border border-line font-bold text-main">Language</td>
+                        <td className="p-1.5 border border-line font-bold text-main">DatesJSON</td>
+                      </tr>
+                      <tr>
+                        <td className="p-1.5 border border-line text-center font-semibold">2</td>
+                        <td className="p-1.5 border border-line font-medium text-main">EN</td>
+                        <td className="p-1.5 border border-line text-[10px] text-muted-editorial truncate max-w-[280px]">["7.–8.11.2026: Larvik Vital Essence SAMHAIN - 3650kr", ...]</td>
+                      </tr>
+                      <tr>
+                        <td className="p-1.5 border border-line text-center font-semibold">3</td>
+                        <td className="p-1.5 border border-line font-medium text-main">NO</td>
+                        <td className="p-1.5 border border-line text-[10px] text-muted-editorial truncate max-w-[280px]">["7.–8.11.2026: Larvik Vital Essence SAMHAIN - 3650kr", ...]</td>
+                      </tr>
+                      <tr>
+                        <td className="p-1.5 border border-line text-center font-semibold">4</td>
+                        <td className="p-1.5 border border-line font-medium text-main">CZ</td>
+                        <td className="p-1.5 border border-line text-[10px] text-muted-editorial truncate max-w-[280px]">["3.10.2026 - Matka a dcera", "4.10.2026...", ...]</td>
+                      </tr>
+                      <tr className="bg-accent-editorial/5">
+                        <td className="p-1.5 border border-line text-center font-bold text-accent-editorial">5</td>
+                        <td className="p-1.5 border border-line font-bold text-accent-editorial">SHE</td>
+                        <td className="p-1.5 border border-line text-[10px] text-accent-editorial">["..."] (sheacademy.no dates stored as JSON array)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-alt/50 border border-line space-y-2">
+                <h5 className="font-medium text-main text-xs uppercase tracking-wider">
+                  How to setup in Google Sheets:
+                </h5>
+                <ol className="list-decimal list-inside space-y-1 text-xs">
+                  <li>Open your Google Sheet (it can even be completely blank &mdash; the tab "WorkshopDates" and headers are created automatically!).</li>
+                  <li>Click <strong>Extensions &gt; Apps Script</strong>.</li>
+                  <li>Replace all code in <code>Code.gs</code> with the script below and click Save.</li>
+                  <li>Click <strong>Deploy &gt; New deployment</strong>.</li>
+                  <li>Select <strong>Web app</strong>, set <strong>Execute as: Me</strong>, and <strong>Who has access: Anyone</strong>.</li>
+                  <li>Copy the resulting Web App URL and paste it in the Admin Settings.</li>
+                </ol>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-[11px] font-mono text-muted-editorial">
+                  Code.gs &bull; Ready to paste
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(WORKSHOP_DATES_MANAGER_APPS_SCRIPT);
+                    setIsCopyingWorkshopScript(true);
+                    setTimeout(() => setIsCopyingWorkshopScript(false), 2000);
+                  }}
+                  className="px-4 py-2 rounded-full text-xs uppercase tracking-widest bg-accent-editorial text-white hover:opacity-90 font-medium cursor-pointer shadow-xs inline-flex items-center space-x-2"
+                >
+                  {isCopyingWorkshopScript ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                      <span>Copied to Clipboard!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Apps Script</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="relative">
+                <pre className="p-4 rounded-xl bg-main border border-line text-[10px] font-mono text-muted-editorial overflow-auto max-h-[380px] whitespace-pre">
+                  {WORKSHOP_DATES_MANAGER_APPS_SCRIPT}
+                </pre>
+                <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-main to-transparent pointer-events-none rounded-b-xl" />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-line flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setShowWorkshopScriptModal(false)}
+                className="px-6 py-2 rounded-full bg-accent-editorial text-white font-medium hover:opacity-90 cursor-pointer shadow-xs text-xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
