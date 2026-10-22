@@ -1,17 +1,19 @@
 import React from 'react';
 import { Workshop } from '../types';
-import { Calendar, ArrowRight, Sparkles, Compass } from 'lucide-react';
+import { Calendar, ArrowRight, Sparkles, Compass, FileText } from 'lucide-react';
 
 interface WorkshopsViewProps {
   workshops?: Workshop[];
   onOpenBooking: (serviceId?: string, practitionerId?: string) => void;
   onOpenContact?: (prefilledMessage?: string) => void;
+  onOpenCancellationPolicy?: () => void;
 }
 
 export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
   workshops = [],
   onOpenBooking,
   onOpenContact,
+  onOpenCancellationPolicy,
 }) => {
   const hasWorkshops = workshops && workshops.length > 0;
 
@@ -19,15 +21,39 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
     <div id="workshops-page" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 space-y-12">
       {/* Header */}
       <div className="space-y-4 max-w-2xl">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-line text-xs uppercase tracking-widest text-accent-editorial bg-alt/30">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Workshops &amp; Immersions</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-line text-xs uppercase tracking-widest text-accent-editorial bg-alt/30">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Workshops &amp; Immersions</span>
+          </div>
+
+          {onOpenCancellationPolicy && (
+            <button
+              type="button"
+              onClick={onOpenCancellationPolicy}
+              className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full border border-accent-editorial/40 text-xs font-medium text-accent-editorial hover:bg-accent-editorial hover:text-white transition-all cursor-pointer"
+            >
+              <FileText className="w-3 h-3" />
+              <span>Cancellation Policy</span>
+            </button>
+          )}
         </div>
         <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-light text-main leading-tight">
           Upcoming Workshops
         </h1>
         <p className="text-base sm:text-lg text-muted-editorial font-light leading-relaxed">
-          Upcoming scheduled dates. Select a workshop to inquire or reserve your place.
+          Upcoming scheduled dates. Select a workshop to inquire or reserve your place. All registrations are subject to our{' '}
+          {onOpenCancellationPolicy ? (
+            <button
+              type="button"
+              onClick={onOpenCancellationPolicy}
+              className="text-accent-editorial underline font-medium hover:text-main cursor-pointer"
+            >
+              Cancellation Policy
+            </button>
+          ) : (
+            'Cancellation Policy'
+          )}.
         </p>
       </div>
 
@@ -171,19 +197,31 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                 Reach out to our team directly for private group cohorts or general workshop inquiries.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (onOpenContact) {
-                  onOpenContact(
-                    `Hi SHE. Academy,\n\nI have a question regarding your upcoming workshops.\n\nThank you!`
-                  );
-                }
-              }}
-              className="px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold border border-line bg-card text-main hover:border-main transition-all shrink-0 cursor-pointer"
-            >
-              Contact Us
-            </button>
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-3 shrink-0">
+              {onOpenCancellationPolicy && (
+                <button
+                  type="button"
+                  onClick={onOpenCancellationPolicy}
+                  className="px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold border border-line bg-card text-muted-editorial hover:text-main hover:border-main transition-all cursor-pointer flex items-center space-x-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5 text-accent-editorial" />
+                  <span>Cancellation Policy</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenContact) {
+                    onOpenContact(
+                      `Hi SHE. Academy,\n\nI have a question regarding your upcoming workshops.\n\nThank you!`
+                    );
+                  }
+                }}
+                className="px-6 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold border border-line bg-card text-main hover:border-main transition-all cursor-pointer"
+              >
+                Contact Us
+              </button>
+            </div>
           </div>
         </div>
       ) : (

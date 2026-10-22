@@ -6,6 +6,7 @@ interface FooterProps {
   onOpenBooking: (serviceId?: string) => void;
   onOpenFeedback: () => void;
   onOpenContact: () => void;
+  onOpenCancellationPolicy?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -13,6 +14,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenBooking,
   onOpenFeedback,
   onOpenContact,
+  onOpenCancellationPolicy,
 }) => {
   return (
     <footer id="main-footer" className="bg-alt pt-12 pb-8 border-t border-line transition-colors">
@@ -154,6 +156,15 @@ export const Footer: React.FC<FooterProps> = ({
               <h4 className="font-sans text-[10px] uppercase tracking-[0.18em] font-semibold text-main pt-4">
                 Legal & Admin
               </h4>
+              {onOpenCancellationPolicy && (
+                <button
+                  type="button"
+                  onClick={onOpenCancellationPolicy}
+                  className="text-left font-semibold text-accent-editorial hover:underline transition-colors cursor-pointer"
+                >
+                  Cancellation Policy
+                </button>
+              )}
               <a href="#" className="hover:text-main transition-colors">
                 Privacy Policy
               </a>

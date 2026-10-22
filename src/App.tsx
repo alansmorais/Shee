@@ -24,6 +24,7 @@ import { ArtOfPleasingCouplesView } from './components/ArtOfPleasingCouplesView'
 import { BookingModal } from './components/BookingModal';
 import { FeedbackDrawer } from './components/FeedbackDrawer';
 import { ContactModal } from './components/ContactModal';
+import { CancellationPolicyModal } from './components/CancellationPolicyModal';
 import { AdminDashboard } from './components/AdminDashboard';
 
 export default function App() {
@@ -62,6 +63,7 @@ export default function App() {
   const [bookingPractitionerId, setBookingPractitionerId] = useState<string | undefined>(undefined);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isCancellationPolicyOpen, setIsCancellationPolicyOpen] = useState(false);
   const [prefilledContactMessage, setPrefilledContactMessage] = useState<string>('');
   const [bannerNotice, setBannerNotice] = useState<string | null>(null);
 
@@ -296,6 +298,7 @@ export default function App() {
         onNavigate={handleNavigate as (v: string, t?: string) => void}
         onOpenBooking={() => handleOpenBooking()}
         onOpenContact={() => setIsContactOpen(true)}
+        onOpenCancellationPolicy={() => setIsCancellationPolicyOpen(true)}
         workshops={workshops}
       />
 
@@ -349,6 +352,7 @@ export default function App() {
             workshops={workshops}
             onOpenBooking={handleOpenBooking}
             onOpenContact={handleOpenContact}
+            onOpenCancellationPolicy={() => setIsCancellationPolicyOpen(true)}
           />
         )}
 
@@ -387,6 +391,7 @@ export default function App() {
         onNavigate={handleNavigate as (v: string, t?: string) => void}
         onOpenFeedback={() => setIsFeedbackOpen(true)}
         onOpenContact={() => handleOpenContact()}
+        onOpenCancellationPolicy={() => setIsCancellationPolicyOpen(true)}
       />
 
       {/* Sticky Mobile CTA Bar (Matching Original) */}
@@ -450,6 +455,12 @@ export default function App() {
           setPrefilledContactMessage('');
         }}
         prefilledMessage={prefilledContactMessage}
+      />
+
+      {/* Cancellation Policy Modal */}
+      <CancellationPolicyModal
+        isOpen={isCancellationPolicyOpen}
+        onClose={() => setIsCancellationPolicyOpen(false)}
       />
     </div>
   );

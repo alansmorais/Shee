@@ -10,6 +10,7 @@ interface NavbarProps {
   onNavigate: (view: string, targetId?: string) => void;
   onOpenBooking: (serviceId?: string, practitionerId?: string) => void;
   onOpenContact: () => void;
+  onOpenCancellationPolicy?: () => void;
   workshops?: Workshop[];
 }
 
@@ -20,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   onOpenBooking,
   onOpenContact,
+  onOpenCancellationPolicy,
   workshops,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -222,6 +224,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             Contact
           </button>
 
+          {onOpenCancellationPolicy && (
+            <button
+              type="button"
+              id="nav-link-cancellation"
+              onClick={onOpenCancellationPolicy}
+              className="cursor-pointer text-main hover:text-accent-editorial transition-colors pb-1 whitespace-nowrap"
+            >
+              Policy
+            </button>
+          )}
+
 
 
           <button
@@ -385,6 +398,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               Contact
             </button>
+            {onOpenCancellationPolicy && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenCancellationPolicy();
+                }}
+                className="text-left py-1 text-main hover:text-accent-editorial cursor-pointer"
+              >
+                Cancellation Policy
+              </button>
+            )}
             <button
               type="button"
               onClick={() => handleNavClick('admin')}
