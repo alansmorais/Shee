@@ -10,6 +10,7 @@ interface WorkshopDetailViewProps {
 export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop, onBack }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedPriceOption, setSelectedPriceOption] = useState(workshop.priceOptions?.[0]?.value || 'standard');
   const [checkoutError, setCheckoutError] = useState('');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const isUnavailable = workshop.status === 'sold_out' || workshop.status === 'closed';
@@ -26,7 +27,7 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           workshopId: workshop.id,
-          priceOption: 'standard',
+          priceOption: selectedPriceOption,
           participantName: name.trim(),
           participantEmail: email.trim()
         })
@@ -103,7 +104,7 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
         <aside className="lg:col-span-5 lg:sticky lg:top-8 rounded-3xl border border-line bg-card p-6 sm:p-8 shadow-xs space-y-6">
           <div className="space-y-2">
             <p className="text-[10px] uppercase tracking-widest text-accent-editorial font-semibold">Your place</p>
-            <p className="font-serif text-3xl text-main">{workshop.price != null ? `${workshop.price.toLocaleString()} ${workshop.currency || 'kr'}` : 'Price on request'}</p>
+            <p className="font-serif text-3xl text-main">{(workshop.priceOptions?.find((option) => option.value === selectedPriceOption)?.price ?? workshop.price) != null ? `${(workshop.priceOptions?.find((option) => option.value === selectedPriceOption)?.price ?? workshop.price)!.toLocaleString()} ${workshop.currency || 'NOK'}` : 'Price on request'}</p>
             <p className="text-xs text-muted-editorial">Workshop-specific registration</p>
           </div>
           <div className="border-t border-line pt-5 space-y-3 text-sm text-muted-editorial">
@@ -115,6 +116,14 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
           ) : (
             <form onSubmit={handleRegistration} className="space-y-4">
               <h2 className="font-serif text-xl">Register your interest</h2>
+              {workshop.priceOptions && workshop.priceOptions.length > 0 && (
+                <label className="block space-y-1.5">
+                  <span className="text-xs font-medium text-muted-editorial">Choose your version</span>
+                  <select value={selectedPriceOption} onChange={(event) => setSelectedPriceOption(event.target.value)} className="w-full rounded-xl border border-line bg-main px-4 py-3 text-sm text-main outline-none focus:border-accent-editorial">
+                    {workshop.priceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                  </select>
+                </label>
+              )}
               <label className="block space-y-1.5">
                 <span className="text-xs font-medium text-muted-editorial">Full name</span>
                 <input required autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-xl border border-line bg-main px-4 py-3 text-sm text-main outline-none focus:border-accent-editorial" placeholder="Your full name" />
