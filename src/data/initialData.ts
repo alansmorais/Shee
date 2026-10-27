@@ -561,6 +561,16 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Daniela Torp & Bas van der Tang'],
     subtitle: 'A three-day journey into your desires and longings',
     description: 'A three-day retreat exploring consensual play, boundaries, desires and fantasies in a safe, respectful setting. The programme includes consent and communication, practical guidance in rope and impact play, and mindful integration.',
+    fullDescription: [
+      'What if there is much more to your pleasure than meets the eye? This retreat invites you to explore consensual play beyond familiar patterns, in a space where you can communicate what you want to give or receive.',
+      'Boundaries, limitations, longings and fantasies are welcome. Exploring genuine desires can bring vulnerable places and old wounds to the surface, creating an opportunity to meet them with care.',
+      'The programme moves from consent, safety and naming desires on Friday, to practical exploration of rope and impact play on Saturday, and mindful connection, grounding and closure on Sunday.'
+    ],
+    quote: 'Conscious kink and play are not about crossing boundaries, but discovering where your boundaries and longings live in safety and mutual consent.',
+    targetAudience: ['Individuals and couples', 'People who want to deepen their sensuality and relationships', 'Curious, open-minded and respectful participants, from beginners to experienced learners'],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen', 'Your own play equipment, if you have any'],
+    priceNote: 'Level 1: 6,400 NOK. Level 2: 7,250 NOK. Contact the organiser to confirm the selected level and current registration details.',
+    hosts: 'Daniela Torp and Bas van der Tang bring together knowledge of the body, consensual interaction, tantra and kink.',
     image: 'https://www.danielatorp.no/images/playwme.jpeg',
     priceOptions: [{ value: 'level1', label: 'Level 1 — 6,400 NOK', price: 6400 }, { value: 'level2', label: 'Level 2 — 7,250 NOK', price: 7250 }],
     curriculum: ['Friday: consent, safety and naming your desires', 'Saturday: practical guidance in rope, impact play and building scenes', 'Sunday: presence, playfulness and a grounded closing'],
@@ -577,6 +587,15 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Daniela Torp & Bas van der Tang'],
     subtitle: 'A three-day retreat for deeper exploration',
     description: 'Level 2 pricing is listed separately in the Norwegian source. Confirm the exact Level 2 programme and availability with the organiser before registering.',
+    fullDescription: [
+      'This workshop belongs to the Play with Me retreat series, exploring consensual play and connection in a respectful setting. Participants are invited to communicate their desires, understand their boundaries and explore what they want to give or receive.',
+      'The source lists Level 2 as a separate price option. Please contact the organiser to confirm the exact Level 2 programme, date and availability before registering.'
+    ],
+    quote: 'Conscious kink and play are about curiosity, communication, safety and mutual consent.',
+    targetAudience: ['Participants who want to continue exploring consensual play', 'Curious, open-minded and respectful people who value communication and boundaries'],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen', 'Your own play equipment, if you have any'],
+    priceNote: 'Level 2 is listed at 7,250 NOK. Confirm the programme and availability with the organiser before payment.',
+    hosts: 'Daniela Torp and Bas van der Tang.',
     image: 'https://www.danielatorp.no/images/playwme.jpeg',
   },
   {
@@ -591,6 +610,16 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Mgr. Daniela Torp'],
     subtitle: 'Seasonal gatherings for women',
     description: 'A women’s gathering focused on rest, body awareness, emotional balance and renewal. The source lists the Imbolc/Beltane programme at 4,350 NOK and SAMHAIN at 3,650 NOK; confirm the selected seasonal date before payment.',
+    fullDescription: [
+      'Throughout the year, women gather for seasonal circles devoted to genuine rest and self-care—not superficial relaxation, but deeper release for body, mind and inner balance. This is a space where you do not need to prove anything, rush anywhere or lead anyone. You can simply be.',
+      'Each gathering invites you to slow down and return to yourself, listening to your body, breath and feelings that are often pushed aside in everyday life. Gentle bodywork, mental quiet, conscious rest and a supportive circle of women are part of the experience.',
+      'Everything takes place in a safe and respectful environment where you are welcome as you are. Nourishing food is included to support recovery and wellbeing. You can join one gathering or follow the wider seasonal cycle.'
+    ],
+    quote: 'A rich variety of practices to support a deeper connection with yourself through dance, bodywork, energy work and embodied presence.',
+    targetAudience: ['Women seeking deep rest and self-care', 'Women wishing to reconnect with their bodies, emotions and vitality', 'Participants who want to join one gathering or the wider seasonal cycle'],
+    whatToBring: ['Comfortable clothing and indoor shoes', 'Water bottle', 'Blanket', 'Sleeping bag or duvet and pillow'],
+    priceNote: 'The source lists Imbolc/Beltane at 4,350 NOK and Samhain at 3,650 NOK. Confirm the currently available seasonal date before payment.',
+    hosts: 'Led by Mgr. Daniela Torp.',
     image: 'https://www.danielatorp.cz/images/1.jpg',
   },
   {
@@ -605,6 +634,18 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Daniela Torp'],
     subtitle: 'Understand male intimacy through mindful touch and communication',
     description: 'Explore men’s intimate needs, vulnerability and conscious touch in a small, respectful group. The Norwegian source lists the workshop price as 2,500 NOK; verify the specific date and venue before registering.',
+    fullDescription: [
+      'Pleasuring a man can seem straightforward at first, but there is a great difference between routine release and offering a deep, transformative and sensual experience.',
+      'In this workshop, you will explore vulnerable and often overlooked aspects of male sexuality, learning to meet a partner with presence, sensuality, warmth and genuine understanding.',
+      'The workshop covers theory and practical principles, including conscious, sensual lingam massage as a way to support deeper, more integrated pleasure without performance pressure.'
+    ],
+    quote: 'Even when intercourse is not possible or desired, conscious touch can support closeness and deep intimate pleasure.',
+    bulletsTitle: 'What you will gain from the workshop',
+    bullets: ['Understand the inner world of men and differences in sexual experience', 'Build confidence and feel more at ease in your sensuality', 'Explore tantric massage and conscious touch that includes the whole body', 'Communicate about intimate needs and reduce performance pressure'],
+    targetAudience: ['People who want to deepen closeness with a new partner', 'Couples who want to rekindle passion', 'Curious single participants who want to understand male anatomy and psychology'],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen'],
+    priceNote: 'The source lists 2,500 NOK for Norway and 2,900 CZK for Czechia. Confirm the specific date and venue before registering.',
+    hosts: 'Led by Daniela Torp.',
     image: 'https://www.danielatorp.cz/images/9-1024x1024.jpg',
   },
   {
@@ -619,6 +660,17 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Daniela Torp'],
     subtitle: 'A practical workshop about female pleasure and conscious touch',
     description: 'Learn about female anatomy, erogenous zones, mindful touch, communication and creating a safe atmosphere without performance pressure. The Norwegian source lists the workshop price as 2,500 NOK; verify the specific date and venue before registering.',
+    fullDescription: [
+      'This practical and respectful workshop explores female pleasure, slow touch, energy flow and emotional safety. Many men sincerely want to offer a partner a wonderful experience, yet may feel uncertain when familiar approaches do not seem to work.',
+      'The workshop helps demystify the female body and patterns of desire. You will learn how the nervous system can respond to safety, attention and pace, and how to approach intimacy with greater awareness, confidence and ease.',
+      'The focus is on respectful learning, mindful touch, communication and understanding that pleasure is not a performance.'
+    ],
+    quote: 'When a man understands a woman’s rhythm and meets her without rushing, a world of deeper pleasure and mutual trust can open up.',
+    bulletsTitle: 'What you will learn',
+    bullets: ['Female anatomy, erogenous zones and the deeper layers of arousal', 'Tantric yoni massage approached with respect, warmth and presence', 'How to create an atmosphere in which a woman can relax', 'Non-verbal communication through body language, breathing and subtle movements', 'How to release performance pressure and develop confidence'],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen'],
+    priceNote: 'The source lists 2,500 NOK for Norway and 2,900 CZK for Czechia. Confirm the specific date and venue before registering.',
+    hosts: 'Led by Daniela Torp.',
     image: 'https://www.danielatorp.cz/images/2-1024x1024.jpg',
   },
   {
@@ -633,6 +685,18 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Daniela Torp'],
     subtitle: 'Rediscover closeness and deeper intimacy as a couple',
     description: 'A workshop for couples exploring communication, conscious touch and intimate needs in a supportive, respectful space. The Norwegian source lists 8,500 NOK per couple; confirm the event date and venue before registering.',
+    fullDescription: [
+      'Discover what partners may want from intimacy, and practise giving, receiving, touching and communicating with greater presence and awareness.',
+      'Partners can sometimes feel as though they come from different planets. This workshop invites couples to explore those differences with curiosity rather than assumptions.',
+      'Created for couples who want to deepen their relationship, understand their own and their partner’s intimate needs, and grow into more confident, caring lovers in a supportive and respectful environment.'
+    ],
+    quote: 'Intimacy is not about performing; it is about daring to drop the mask and meet your partner with genuine curiosity and loving presence.',
+    bulletsTitle: 'What you can explore together',
+    bullets: ['Understand male sexuality beyond speed and performance, and explore conscious touch', 'Learn to notice a partner’s signals, approach touch gently and understand the importance of patience', 'Build confidence, communication and practical tools for intimate connection'],
+    targetAudience: ['Couples at every stage of a relationship', 'Partners who want to deepen their sexuality and connection', 'Curious and respectful participants, from beginners to experienced learners'],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen'],
+    priceNote: 'The source lists 8,500 NOK per couple in Norway and 2,900 CZK per person in Czechia. Confirm the current date, venue and price before registering.',
+    hosts: 'Led by Daniela Torp.',
     image: 'https://www.danielatorp.cz/images/6-1024x1024.jpg',
   },
 ];
