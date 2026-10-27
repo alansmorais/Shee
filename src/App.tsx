@@ -387,7 +387,7 @@ export default function App() {
               </div>
             );
           }
-          return <WorkshopDetailView workshop={selectedWorkshop} onBack={() => handleNavigate('workshops')} onOpenContact={handleOpenContact} />;
+          return <WorkshopDetailView workshop={selectedWorkshop} onBack={() => handleNavigate('workshops')} />;
         })()}
 
         {currentView === 'play-with-me-1' && (
