@@ -36,7 +36,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples' | 'workshop-detail'>(() => {
     if (typeof window !== 'undefined') {
       const h = window.location.hash;
-      if (h.startsWith('#workshop/')) return 'workshop-detail';
+      if (h.startsWith('#workshop/') || window.location.pathname.startsWith('/workshops/')) return 'workshop-detail';
       if (h === '#admin') return 'admin';
       if (h === '#workshops' || h === '#workshop') return 'workshops';
       if (h === '#women') return 'women';
@@ -50,8 +50,8 @@ export default function App() {
   });
 
   const [selectedWorkshopId, setSelectedWorkshopId] = useState<string>(() => {
-    if (typeof window !== 'undefined' && window.location.hash.startsWith('#workshop/')) {
-      try { return decodeURIComponent(window.location.hash.slice('#workshop/'.length)); } catch { return window.location.hash.slice('#workshop/'.length); }
+    if (typeof window !== 'undefined' && (window.location.hash.startsWith('#workshop/') || window.location.pathname.startsWith('/workshops/'))) {
+      const raw = window.location.pathname.startsWith('/workshops/') ? window.location.pathname.slice('/workshops/'.length) : window.location.hash.slice('#workshop/'.length); try { return decodeURIComponent(raw); } catch { return raw; }
     }
     return '';
   });
@@ -133,8 +133,9 @@ export default function App() {
     // Check URL hash for direct admin routing (e.g. #admin, #workshops)
     const handleHashSync = () => {
       const h = window.location.hash;
-      if (h.startsWith('#workshop/')) {
-        try { setSelectedWorkshopId(decodeURIComponent(h.slice('#workshop/'.length))); } catch { setSelectedWorkshopId(h.slice('#workshop/'.length)); }
+      if (window.location.pathname.startsWith('/workshops/') || h.startsWith('#workshop/')) {
+        const raw = window.location.pathname.startsWith('/workshops/') ? window.location.pathname.slice('/workshops/'.length) : h.slice('#workshop/'.length);
+        try { setSelectedWorkshopId(decodeURIComponent(raw)); } catch { setSelectedWorkshopId(raw); }
         setCurrentView('workshop-detail');
       } else if (h === '#admin') {
         setCurrentView('admin');
@@ -157,7 +158,8 @@ export default function App() {
 
     handleHashSync();
     window.addEventListener('hashchange', handleHashSync);
-    return () => window.removeEventListener('hashchange', handleHashSync);
+    window.addEventListener('popstate', handleHashSync);
+    return () => { window.removeEventListener('hashchange', handleHashSync); window.removeEventListener('popstate', handleHashSync); };
   }, [loadData, fetchGoogleReviews]);
 
   // Dynamic SEO updater per view
@@ -247,10 +249,14 @@ export default function App() {
     loadData();
   };
 
+  const workshopSlug = (workshop: Workshop) => `${workshop.title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+
   const handleOpenWorkshop = (workshopId: string) => {
+    const workshop = workshops.find((item) => item.id === workshopId);
+    const slug = workshop ? workshopSlug(workshop) : workshopId;
     setSelectedWorkshopId(workshopId);
     setCurrentView('workshop-detail');
-    window.location.hash = `workshop/${encodeURIComponent(workshopId)}`;
+    window.history.pushState(null, '', `/workshops/${encodeURIComponent(slug)}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -377,7 +383,7 @@ export default function App() {
         )}
 
         {currentView === 'workshop-detail' && (() => {
-          const selectedWorkshop = workshops.find((workshop) => workshop.id === selectedWorkshopId);
+          const selectedWorkshop = workshops.find((workshop) => workshop.id === selectedWorkshopId || workshopSlug(workshop) === selectedWorkshopId);
           if (!selectedWorkshop) {
             return (
               <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-5">
