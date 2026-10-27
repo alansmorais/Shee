@@ -36,7 +36,8 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples' | 'workshop-detail'>(() => {
     if (typeof window !== 'undefined') {
       const h = window.location.hash;
-      if (h.startsWith('#workshop/') || window.location.pathname.startsWith('/workshops/')) return 'workshop-detail';
+      if (h.startsWith('#workshop/') || /^\/workshops\/.+/.test(window.location.pathname)) return 'workshop-detail';
+      if (window.location.pathname.replace(/\/+$/, '') === '/workshops') return 'workshops';
       if (h === '#admin') return 'admin';
       if (h === '#workshops' || h === '#workshop') return 'workshops';
       if (h === '#women') return 'women';
@@ -50,7 +51,7 @@ export default function App() {
   });
 
   const [selectedWorkshopId, setSelectedWorkshopId] = useState<string>(() => {
-    if (typeof window !== 'undefined' && (window.location.hash.startsWith('#workshop/') || window.location.pathname.startsWith('/workshops/'))) {
+    if (typeof window !== 'undefined' && (window.location.hash.startsWith('#workshop/') || /^\/workshops\/.+/.test(window.location.pathname))) {
       const raw = window.location.pathname.startsWith('/workshops/') ? window.location.pathname.slice('/workshops/'.length) : window.location.hash.slice('#workshop/'.length); try { return decodeURIComponent(raw); } catch { return raw; }
     }
     return '';
@@ -133,7 +134,9 @@ export default function App() {
     // Check URL hash for direct admin routing (e.g. #admin, #workshops)
     const handleHashSync = () => {
       const h = window.location.hash;
-      if (window.location.pathname.startsWith('/workshops/') || h.startsWith('#workshop/')) {
+      if (window.location.pathname.replace(/\/+$/, '') === '/workshops') {
+        setCurrentView('workshops');
+      } else if (window.location.pathname.startsWith('/workshops/') || h.startsWith('#workshop/')) {
         const raw = window.location.pathname.startsWith('/workshops/') ? window.location.pathname.slice('/workshops/'.length) : h.slice('#workshop/'.length);
         try { setSelectedWorkshopId(decodeURIComponent(raw)); } catch { setSelectedWorkshopId(raw); }
         setCurrentView('workshop-detail');
