@@ -41,6 +41,7 @@ export interface Workshop {
   description?: string;
   curriculum?: string[];
   image?: string;
+  gallery?: { src: string; alt: string }[];
   priceOptions?: { value: string; label: string; price: number }[];
   fullDescription?: string[];
   quote?: string;
