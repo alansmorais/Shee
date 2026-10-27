@@ -17,7 +17,26 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
   onOpenContact,
   onOpenCancellationPolicy,
 }) => {
-  const hasWorkshops = workshops && workshops.length > 0;
+  // Hide past events from the public catalogue. Date strings may be single dates or ranges
+  // such as "7 - 8/11/2026"; use the final day in the range for visibility.
+  const getWorkshopEndDate = (dateText: string): Date | null => {
+    const matches = [...dateText.matchAll(/(\d{1,2})\s*[./-]\s*(\d{1,2})\s*[./-]\s*(\d{4})/g)];
+    if (matches.length > 0) {
+      const [, day, month, year] = matches[matches.length - 1];
+      const parsed = new Date(Number(year), Number(month) - 1, Number(day), 23, 59, 59);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+    const shortRange = dateText.match(/(?:\d{1,2}\s*[-–]\s*)?(\d{1,2})\s*[./-]\s*(\d{4})/);
+    if (shortRange) return null;
+    return null;
+  };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const upcomingWorkshops = workshops.filter((workshop) => {
+    const endDate = getWorkshopEndDate(workshop.date);
+    return endDate !== null && endDate >= today;
+  });
+  const hasWorkshops = upcomingWorkshops.length > 0;
 
   return (
     <div id="workshops-page" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 space-y-12">
@@ -63,7 +82,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
       {hasWorkshops ? (
         <div className="space-y-4">
           <div className="divide-y divide-line/60 rounded-3xl border border-line bg-card overflow-hidden shadow-xs">
-            {workshops.map((w, index) => {
+            {upcomingWorkshops.map((w, index) => {
               const isSoldOut = w.status === 'sold_out' || w.status === 'closed';
 
               return (
