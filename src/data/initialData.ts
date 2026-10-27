@@ -531,11 +531,6 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
       'For everyone who senses that there is something deeper and more alive to explore, this is your invitation.'
     ],
     quote: 'Conscious kink and play are not about crossing boundaries, but discovering where your boundaries and longings live in safety and mutual consent.',
-    curriculum: [
-      'Friday: Consent, safety, expressing what you want to give and receive, and meeting what may hold you back.',
-      'Saturday: Practical guidance in impact play and bondage, including rope and whip; negotiating boundaries, building scenes and a playful evening gathering.',
-      'Sunday: Presence, playfulness, spanking, grounding and a safe closing.'
-    ],
     targetAudience: ['Individuals and couples', 'People who want to deepen their sensuality and relationships', 'Curious, open-minded and respectful participants, from beginners to experienced learners'],
     whatToBring: ['Comfortable clothes', 'Notebook and pen', 'Your own play equipment, if you have any'],
     priceNote: 'Level 1: 6,400 NOK. The source also lists Level 2 at 7,250 NOK; confirm which level and date you are registering for.',
