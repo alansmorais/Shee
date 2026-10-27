@@ -71,10 +71,28 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
           <div className="space-y-4">
             <h2 className="font-serif text-3xl font-light">About this workshop</h2>
             <div className="h-0.5 w-16 bg-accent-editorial" />
-            <p className="text-sm sm:text-base leading-relaxed text-muted-editorial font-light">
-              {workshop.description || 'Explore the workshop details below and contact SHE. Academy to confirm availability and registration.'}
-            </p>
+            <div className="space-y-4 text-sm sm:text-base leading-relaxed text-muted-editorial font-light">
+              {(workshop.fullDescription && workshop.fullDescription.length > 0
+                ? workshop.fullDescription
+                : [workshop.description || 'Explore the workshop details below and contact SHE. Academy to confirm availability and registration.']
+              ).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+            </div>
           </div>
+
+          {workshop.quote && (
+            <blockquote className="rounded-r-xl border-l-4 border-accent-editorial bg-alt/50 p-5 italic leading-relaxed text-main">
+              {workshop.quote}
+            </blockquote>
+          )}
+
+          {workshop.targetAudience && workshop.targetAudience.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="font-serif text-2xl font-light">Who is this workshop for?</h2>
+              <ul className="space-y-3">
+                {workshop.targetAudience.map((item, index) => <li key={index} className="flex items-start gap-3 text-sm text-muted-editorial"><CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-accent-editorial" /><span>{item}</span></li>)}
+              </ul>
+            </div>
+          )}
 
           {workshop.curriculum && workshop.curriculum.length > 0 && (
             <div className="space-y-5">
@@ -82,6 +100,22 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
               <ul className="space-y-3">
                 {workshop.curriculum.map((item, index) => <li key={index} className="flex items-start gap-3 text-sm text-muted-editorial"><CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-accent-editorial" /><span>{item}</span></li>)}
               </ul>
+            </div>
+          )}
+
+          {workshop.whatToBring && workshop.whatToBring.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="font-serif text-2xl font-light">What to bring</h2>
+              <ul className="space-y-2">
+                {workshop.whatToBring.map((item, index) => <li key={index} className="text-sm text-muted-editorial">• {item}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {workshop.hosts && (
+            <div className="space-y-3">
+              <h2 className="font-serif text-2xl font-light">About the facilitators</h2>
+              <p className="text-sm leading-relaxed text-muted-editorial">{workshop.hosts}</p>
             </div>
           )}
 
@@ -106,6 +140,7 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
             <p className="text-[10px] uppercase tracking-widest text-accent-editorial font-semibold">Your place</p>
             <p className="font-serif text-3xl text-main">{(workshop.priceOptions?.find((option) => option.value === selectedPriceOption)?.price ?? workshop.price) != null ? `${(workshop.priceOptions?.find((option) => option.value === selectedPriceOption)?.price ?? workshop.price)!.toLocaleString()} ${workshop.currency || 'NOK'}` : 'Price on request'}</p>
             <p className="text-xs text-muted-editorial">Workshop-specific registration</p>
+            {workshop.priceNote && <p className="pt-2 text-xs leading-relaxed text-muted-editorial">{workshop.priceNote}</p>}
           </div>
           <div className="border-t border-line pt-5 space-y-3 text-sm text-muted-editorial">
             <p className="flex items-start gap-2"><Calendar className="w-4 h-4 mt-0.5 shrink-0 text-accent-editorial" />{workshop.date}</p>
