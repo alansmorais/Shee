@@ -91,8 +91,13 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                   id={w.id}
                   className="scroll-mt-28 p-5 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-5 transition-colors hover:bg-alt/30 group"
                 >
-                  {/* Left: Date + Title */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 min-w-0">
+                  {/* Left: Original source photo, date + title */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 min-w-0 flex-1">
+                    {w.image && (
+                      <button type="button" onClick={() => onOpenWorkshop(w.id)} className="shrink-0 rounded-xl overflow-hidden w-full sm:w-36 h-40 sm:h-28 bg-alt border border-line cursor-pointer" aria-label={`View ${w.title} details`}>
+                        <img src={w.image} alt={w.title} loading="lazy" className="w-full h-full object-cover" />
+                      </button>
+                    )}
                     <div className="flex items-center space-x-3 shrink-0">
                       <span className="px-3 py-1 rounded-lg bg-alt font-mono text-xs font-semibold text-accent-editorial border border-line whitespace-nowrap">
                         {w.date}
