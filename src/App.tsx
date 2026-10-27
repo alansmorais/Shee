@@ -249,7 +249,7 @@ export default function App() {
     loadData();
   };
 
-  const workshopSlug = (workshop: Workshop) => `${workshop.title.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+  const workshopSlug = (workshop: Workshop) => `${workshop.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 
   const handleOpenWorkshop = (workshopId: string) => {
     const workshop = workshops.find((item) => item.id === workshopId);
