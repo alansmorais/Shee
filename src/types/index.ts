@@ -41,6 +41,7 @@ export interface Workshop {
   description?: string;
   curriculum?: string[];
   image?: string;
+  priceOptions?: { value: string; label: string; price: number }[];
 }
 
 export interface TimeSlot {
