@@ -64,7 +64,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
         <div className="space-y-4">
           <div className="divide-y divide-line/60 rounded-3xl border border-line bg-card overflow-hidden shadow-xs">
             {workshops.map((w, index) => {
-              const isSoldOut = w.status === 'sold_out';
+              const isSoldOut = w.status === 'sold_out' || w.status === 'closed';
 
               return (
                 <div
@@ -127,15 +127,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                     <button
                       type="button"
                       disabled={isSoldOut}
-                      onClick={() => {
-                        if (onOpenContact) {
-                          onOpenContact(
-                            `Hi SHE. Academy,\n\nI would like to reserve a place for the workshop "${w.title}" on ${w.date}.\n\nPlease let me know the details and registration steps.\n\nThank you!`
-                          );
-                        } else {
-                          onOpenBooking();
-                        }
-                      }}
+                      onClick={() => onOpenWorkshop(w.id)}
                       className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer ${
                         isSoldOut
                           ? 'bg-alt text-muted-editorial cursor-not-allowed border border-line'
