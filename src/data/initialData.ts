@@ -517,6 +517,7 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     subtitle: 'Seasonal women’s gathering for rest, presence and renewal',
     description: 'A seasonal gathering dedicated to deep rest, body awareness, emotional balance and a supportive circle of women. Choose an individual gathering or explore the wider seasonal cycle.',
     image: 'https://www.danielatorp.cz/images/1.jpg',
+    priceOptions: [{ value: 'imbolc_beltane', label: 'Imbolc / Beltane — 4,350 NOK', price: 4350 }, { value: 'samhain', label: 'Samhain — 3,650 NOK', price: 3650 }],
     curriculum: ['Bodywork and mindful rest', 'Space for emotional calm and self-care', 'A supportive women’s circle', 'Nourishing food prepared with care'],
   },
   {
@@ -543,6 +544,7 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     subtitle: 'A three-day journey into your desires and longings',
     description: 'A three-day retreat exploring consensual play, boundaries, desires and fantasies in a safe, respectful setting. The programme includes consent and communication, practical guidance in rope and impact play, and mindful integration.',
     image: 'https://www.danielatorp.no/images/playwme.jpeg',
+    priceOptions: [{ value: 'level1', label: 'Level 1 — 6,400 NOK', price: 6400 }, { value: 'level2', label: 'Level 2 — 7,250 NOK', price: 7250 }],
     curriculum: ['Friday: consent, safety and naming your desires', 'Saturday: practical guidance in rope, impact play and building scenes', 'Sunday: presence, playfulness and a grounded closing'],
   },
   {
