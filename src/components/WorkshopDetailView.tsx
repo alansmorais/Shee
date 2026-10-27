@@ -66,6 +66,19 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
         </div>
       </section>
 
+      {workshop.gallery && workshop.gallery.length > 0 && (
+        <section aria-label={`${workshop.title} photos`} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+            {workshop.gallery.map((photo, index) => (
+              <figure key={`${photo.src}-${index}`} className="overflow-hidden rounded-2xl border border-line bg-card">
+                <img src={photo.src} alt={photo.alt} loading={index < 2 ? 'eager' : 'lazy'} className="w-full aspect-[4/3] object-cover" />
+                <figcaption className="px-3 py-2 text-xs text-muted-editorial">{photo.alt}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
         <div className="lg:col-span-7 space-y-10">
           <div className="space-y-4">
