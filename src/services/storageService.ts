@@ -171,12 +171,27 @@ class StorageService {
 
   public getWorkshops(): Workshop[] {
     try {
-      const list = this.get<Workshop[]>(STORAGE_KEYS.WORKSHOPS, INITIAL_WORKSHOPS);
-      if (!Array.isArray(list) || list.length === 0) {
+      const stored = this.get<Workshop[]>(STORAGE_KEYS.WORKSHOPS, INITIAL_WORKSHOPS);
+      if (!Array.isArray(stored) || stored.length === 0) {
         this.set(STORAGE_KEYS.WORKSHOPS, INITIAL_WORKSHOPS);
         return INITIAL_WORKSHOPS;
       }
-      return list.filter((w): w is Workshop => Boolean(w && typeof w === 'object' && w.id));
+
+      // Refresh known seeded workshops with the latest shipped content while preserving
+      // admin-created workshops that do not exist in INITIAL_WORKSHOPS.
+      const validStored = stored.filter((w): w is Workshop => Boolean(w && typeof w === 'object' && w.id));
+      const storedById = new Map(validStored.map((workshop) => [workshop.id, workshop]));
+      const refreshed = INITIAL_WORKSHOPS.map((initial) => ({
+        ...(storedById.get(initial.id) || {}),
+        ...initial,
+      }));
+      const initialIds = new Set(INITIAL_WORKSHOPS.map((workshop) => workshop.id));
+      const adminCreated = validStored.filter((workshop) => !initialIds.has(workshop.id));
+      const merged = [...refreshed, ...adminCreated];
+
+      // Persist updated content so existing visitors' browsers receive the same details.
+      this.set(STORAGE_KEYS.WORKSHOPS, merged);
+      return merged;
     } catch (e) {
       console.warn('Error reading workshops from storage, falling back to initial data:', e);
       return INITIAL_WORKSHOPS;
