@@ -42,6 +42,14 @@ export interface Workshop {
   curriculum?: string[];
   image?: string;
   priceOptions?: { value: string; label: string; price: number }[];
+  fullDescription?: string[];
+  quote?: string;
+  targetAudience?: string[];
+  whatToBring?: string[];
+  priceNote?: string;
+  hosts?: string;
+  bulletsTitle?: string;
+  bullets?: string[];
 }
 
 export interface TimeSlot {
