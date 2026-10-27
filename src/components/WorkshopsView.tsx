@@ -5,6 +5,7 @@ import { Calendar, ArrowRight, Sparkles, Compass, FileText } from 'lucide-react'
 interface WorkshopsViewProps {
   workshops?: Workshop[];
   onOpenBooking: (serviceId?: string, practitionerId?: string) => void;
+  onOpenWorkshop: (workshopId: string) => void;
   onOpenContact?: (prefilledMessage?: string) => void;
   onOpenCancellationPolicy?: () => void;
 }
@@ -12,6 +13,7 @@ interface WorkshopsViewProps {
 export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
   workshops = [],
   onOpenBooking,
+  onOpenWorkshop,
   onOpenContact,
   onOpenCancellationPolicy,
 }) => {
@@ -62,7 +64,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
         <div className="space-y-4">
           <div className="divide-y divide-line/60 rounded-3xl border border-line bg-card overflow-hidden shadow-xs">
             {workshops.map((w, index) => {
-              const isSoldOut = w.status === 'sold_out';
+              const isSoldOut = w.status === 'sold_out' || w.status === 'closed';
 
               return (
                 <div
@@ -93,9 +95,14 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                     </div>
 
                     <div className="min-w-0">
-                      <h2 className="font-serif text-lg sm:text-xl lg:text-2xl text-main font-normal group-hover:text-accent-editorial transition-colors">
+                      <button type="button" onClick={() => onOpenWorkshop(w.id)} className="text-left font-serif text-lg sm:text-xl lg:text-2xl text-main font-normal group-hover:text-accent-editorial transition-colors cursor-pointer">
                         {w.title}
-                      </h2>
+                      </button>
+                      <div className="mt-2.5">
+                        <button type="button" onClick={() => onOpenWorkshop(w.id)} className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider cursor-pointer">
+                          <span>View workshop details</span><ArrowRight className="w-3 h-3" />
+                        </button>
+                      </div>
                       {w.subtitle && (
                         <p className="text-xs text-muted-editorial font-light mt-0.5">{w.subtitle}</p>
                       )}
@@ -105,50 +112,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                       {w.location && (
                         <p className="text-xs text-muted-editorial font-light mt-1">{w.location}</p>
                       )}
-                      {w.title.toLowerCase().includes('play with me 1') && (
-                        <div className="mt-2.5">
-                          <a
-                            href="#play-with-me-1"
-                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
-                          >
-                            <span>📖 Learn More &amp; View Details</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      )}
-                      {(w.title.toLowerCase().includes('pleasing a woman') || w.title.toLowerCase().includes('potěšit ženu')) && (
-                        <div className="mt-2.5">
-                          <a
-                            href="#art-of-pleasing-woman"
-                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
-                          >
-                            <span>📖 Learn More &amp; View Details</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      )}
-                      {(w.title.toLowerCase().includes('pleasing a man') || w.title.toLowerCase().includes('potěšit muže') || w.title.toLowerCase().includes('please a man')) && (
-                        <div className="mt-2.5">
-                          <a
-                            href="#how-to-please-a-man"
-                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
-                          >
-                            <span>📖 Learn More &amp; View Details</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      )}
-                      {(w.title.toLowerCase().includes('for couples') || w.title.toLowerCase().includes('pro páry')) && (
-                        <div className="mt-2.5">
-                          <a
-                            href="#art-of-pleasing-couples"
-                            className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider"
-                          >
-                            <span>📖 Learn More &amp; View Details</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                      )}
+
                     </div>
                   </div>
 
@@ -163,15 +127,7 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                     <button
                       type="button"
                       disabled={isSoldOut}
-                      onClick={() => {
-                        if (onOpenContact) {
-                          onOpenContact(
-                            `Hi SHE. Academy,\n\nI would like to reserve a place for the workshop "${w.title}" on ${w.date}.\n\nPlease let me know the details and registration steps.\n\nThank you!`
-                          );
-                        } else {
-                          onOpenBooking();
-                        }
-                      }}
+                      onClick={() => onOpenWorkshop(w.id)}
                       className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-semibold transition-all shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer ${
                         isSoldOut
                           ? 'bg-alt text-muted-editorial cursor-not-allowed border border-line'

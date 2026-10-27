@@ -17,6 +17,7 @@ import { HomeView } from './components/HomeView';
 import { ForWomenView } from './components/ForWomenView';
 import { ForMenView } from './components/ForMenView';
 import { WorkshopsView } from './components/WorkshopsView';
+import { WorkshopDetailView } from './components/WorkshopDetailView';
 import { PlayWithMe1View } from './components/PlayWithMe1View';
 import { ArtOfPleasingWomanView } from './components/ArtOfPleasingWomanView';
 import { HowToPleaseManView } from './components/HowToPleaseManView';
@@ -32,9 +33,10 @@ export default function App() {
   const theme = 'light';
 
   // Navigation View: 'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples'
-  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples'>(() => {
+  const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples' | 'workshop-detail'>(() => {
     if (typeof window !== 'undefined') {
       const h = window.location.hash;
+      if (h.startsWith('#workshop/')) return 'workshop-detail';
       if (h === '#admin') return 'admin';
       if (h === '#workshops' || h === '#workshop') return 'workshops';
       if (h === '#women') return 'women';
@@ -45,6 +47,13 @@ export default function App() {
       if (h === '#art-of-pleasing-couples' || h === '#pleasing-couples') return 'art-of-pleasing-couples';
     }
     return 'home';
+  });
+
+  const [selectedWorkshopId, setSelectedWorkshopId] = useState<string>(() => {
+    if (typeof window !== 'undefined' && window.location.hash.startsWith('#workshop/')) {
+      try { return decodeURIComponent(window.location.hash.slice('#workshop/'.length)); } catch { return window.location.hash.slice('#workshop/'.length); }
+    }
+    return '';
   });
 
   // Data Store State
@@ -124,7 +133,10 @@ export default function App() {
     // Check URL hash for direct admin routing (e.g. #admin, #workshops)
     const handleHashSync = () => {
       const h = window.location.hash;
-      if (h === '#admin') {
+      if (h.startsWith('#workshop/')) {
+        try { setSelectedWorkshopId(decodeURIComponent(h.slice('#workshop/'.length))); } catch { setSelectedWorkshopId(h.slice('#workshop/'.length)); }
+        setCurrentView('workshop-detail');
+      } else if (h === '#admin') {
         setCurrentView('admin');
       } else if (h === '#workshops' || h === '#workshop') {
         setCurrentView('workshops');
@@ -235,6 +247,13 @@ export default function App() {
     loadData();
   };
 
+  const handleOpenWorkshop = (workshopId: string) => {
+    setSelectedWorkshopId(workshopId);
+    setCurrentView('workshop-detail');
+    window.location.hash = `workshop/${encodeURIComponent(workshopId)}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // View Navigation
   const handleNavigate = (view: 'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples', targetId?: string) => {
     setCurrentView(view);
@@ -249,7 +268,7 @@ export default function App() {
     } else if (view === 'art-of-pleasing-couples') {
       window.location.hash = 'art-of-pleasing-couples';
     } else {
-      if (window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
+      if (window.location.hash.startsWith('#workshop/') || window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
         history.pushState(null, '', ' ');
       }
     }
@@ -351,10 +370,25 @@ export default function App() {
           <WorkshopsView
             workshops={workshops}
             onOpenBooking={handleOpenBooking}
+            onOpenWorkshop={handleOpenWorkshop}
             onOpenContact={handleOpenContact}
             onOpenCancellationPolicy={() => setIsCancellationPolicyOpen(true)}
           />
         )}
+
+        {currentView === 'workshop-detail' && (() => {
+          const selectedWorkshop = workshops.find((workshop) => workshop.id === selectedWorkshopId);
+          if (!selectedWorkshop) {
+            return (
+              <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-5">
+                <h1 className="font-serif text-3xl text-main">Workshop not found</h1>
+                <p className="text-sm text-muted-editorial">This workshop may have been removed or its link may be outdated.</p>
+                <button type="button" onClick={() => handleNavigate('workshops')} className="px-6 py-3 rounded-full bg-[#32231F] text-[#FCFAF7] text-xs uppercase tracking-widest font-semibold">Back to Workshops</button>
+              </div>
+            );
+          }
+          return <WorkshopDetailView workshop={selectedWorkshop} onBack={() => handleNavigate('workshops')} />;
+        })()}
 
         {currentView === 'play-with-me-1' && (
           <PlayWithMe1View
