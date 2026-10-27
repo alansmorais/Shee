@@ -5,30 +5,39 @@ import { Workshop } from '../types';
 interface WorkshopDetailViewProps {
   workshop: Workshop;
   onBack: () => void;
-  onOpenContact: (prefilledMessage?: string) => void;
 }
 
-export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop, onBack, onOpenContact }) => {
+export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop, onBack }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [checkoutError, setCheckoutError] = useState('');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const isUnavailable = workshop.status === 'sold_out' || workshop.status === 'closed';
 
-  const handleRegistration = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleRegistration = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const message = [
-      'SHE. Academy workshop registration request',
-      '',
-      `Workshop: ${workshop.title}`,
-      `Workshop ID: ${workshop.id}`,
-      `Date: ${workshop.date}`,
-      `Price: ${workshop.price != null ? `${workshop.price.toLocaleString()} ${workshop.currency || 'kr'}` : 'Please confirm'}`,
-      '',
-      `Name: ${name.trim()}`,
-      `Email: ${email.trim()}`,
-      '',
-      'Please confirm availability and send me the secure payment link for this workshop.'
-    ].join('\n');
-    onOpenContact(message);
+    setCheckoutError('');
+    setCheckoutLoading(true);
+    try {
+      const endpoint = (import.meta as ImportMeta & { env?: { VITE_STRIPE_WORKER_URL?: string } }).env?.VITE_STRIPE_WORKER_URL
+        || 'https://danielatorp-no-stripe-checkout.alanpkmorais.workers.dev';
+      const response = await fetch(`${endpoint.replace(/\\/$/, '')}/api/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workshopId: workshop.id,
+          priceOption: 'standard',
+          participantName: name.trim(),
+          participantEmail: email.trim()
+        })
+      });
+      const result = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !result.url) throw new Error(result.error || 'Stripe could not start checkout. Please try again.');
+      window.location.assign(result.url);
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : 'Unable to start secure payment. Please try again.');
+      setCheckoutLoading(false);
+    }
   };
 
   return (
@@ -114,10 +123,11 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
                 <span className="text-xs font-medium text-muted-editorial">Email address</span>
                 <input required type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-xl border border-line bg-main px-4 py-3 text-sm text-main outline-none focus:border-accent-editorial" placeholder="you@example.com" />
               </label>
-              <button type="submit" className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#32231F] px-6 py-3.5 text-xs uppercase tracking-widest font-semibold text-[#FCFAF7] hover:bg-accent-editorial transition-colors">
-                Continue registration <ArrowRight className="w-4 h-4" />
+              {checkoutError && <p role="alert" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-800">{checkoutError}</p>}
+              <button type="submit" disabled={checkoutLoading} className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#32231F] px-6 py-3.5 text-xs uppercase tracking-widest font-semibold text-[#FCFAF7] hover:bg-accent-editorial transition-colors disabled:opacity-60 disabled:cursor-wait">
+                {checkoutLoading ? 'Connecting to secure checkout…' : 'Continue to secure payment'} {!checkoutLoading && <ArrowRight className="w-4 h-4" />}
               </button>
-              <p className="text-xs leading-relaxed text-muted-editorial">Your request will include this workshop’s exact ID, date and price. Secure Stripe checkout must be connected before online payment can be completed here.</p>
+              <p className="text-xs leading-relaxed text-muted-editorial">Checkout is processed securely by Stripe. Your registration is tagged as SHE Academy so the paid registration can be identified in the registration system.</p>
             </form>
           )}
           <div className="flex items-center gap-2 border-t border-line pt-4 text-xs text-muted-editorial"><CreditCard className="w-4 h-4 text-accent-editorial" /> Secure payment step</div>
