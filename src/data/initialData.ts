@@ -523,13 +523,31 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
   {
     id: 'ws-4',
     date: '21 - 22/11/2026',
-    title: 'Trauma workshop with Anne-Oslo',
+    title: 'Trauma Workshop with Anne & Daniela',
     status: 'open',
-    price: 4900,
-    currency: 'kr',
-    time: '10:00 – 17:00',
-    location: 'Oslo, Norway',
-    facilitators: ['Anne & Faculty'],
+    price: 2850,
+    currency: 'NOK',
+    time: '21 November 10:00–18:00; 22 November 10:00–15:00',
+    location: 'Prindsen Yoga & Therapy, Storgata 36C, Oslo, Norway',
+    facilitators: ['Anne Brit Borch Sandberg', 'Mgr. Daniela Torp'],
+    subtitle: 'Two days that can change the way you understand yourself and others',
+    description: 'Explore how trauma influences relationships, attachment, and the way we relate to ourselves and others.',
+    image: 'https://danielatorp.no/images/web-1920---workshop.jpg',
+    fullDescription: [
+      'Trauma affects how we experience ourselves, other people, and our relationships. In this workshop, we explore how past experiences can shape attachment, reactions, and patterns in everyday life.',
+      'Through professional insights, practical demonstrations, and exercises, you will have the opportunity to understand more about how trauma works and how it can show up in our relationships.',
+      'The workshop is suitable both for people who want to better understand themselves and their relationships, and for professionals who work with and support others.',
+      'We create a respectful space for learning, reflection, and practical exploration.'
+    ],
+    quote: 'Two days of new insight into how our experiences shape us—and how we can meet ourselves and others with greater understanding.',
+    targetAudience: [
+      'For anyone seeking a deeper understanding of themselves and their relationships',
+      'For anyone who wants to better understand attachment and trauma responses',
+      'For professionals who work with and support other people'
+    ],
+    whatToBring: ['Comfortable clothing', 'Notebook and pen'],
+    priceNote: 'Total price: 2,850 NOK. Deposit: 1,425 NOK (50% of the total). Payment is by Vipps #970088 only. Your place is confirmed when the deposit is paid. Registration by SMS: 958 64 782.',
+    hosts: 'Anne Brit Borch Sandberg is a psychiatric nurse and cognitive therapist who works with AIM (Recognition, Insight, Mastery). She supports people in exploring self-understanding through cognitive approaches and insight, and in developing an inner compass for relationships, self-care, and new perspectives. Daniela Torp has more than 20 years of experience with the body, intimacy, sexuality, and relationships. She works with individuals and couples through coaching, body-based and trauma-informed approaches, and has training in Sexological Bodywork from California and Compassionate Trauma Therapy (2025).'
   },
   {
     id: 'ws-5',
