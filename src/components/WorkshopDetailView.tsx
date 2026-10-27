@@ -21,7 +21,7 @@ export const WorkshopDetailView: React.FC<WorkshopDetailViewProps> = ({ workshop
     try {
       const endpoint = (import.meta as ImportMeta & { env?: { VITE_STRIPE_WORKER_URL?: string } }).env?.VITE_STRIPE_WORKER_URL
         || 'https://danielatorp-no-stripe-checkout.alanpkmorais.workers.dev';
-      const response = await fetch(`${endpoint.replace(/\\/$/, '')}/api/create-checkout-session`, {
+      const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/create-checkout-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
