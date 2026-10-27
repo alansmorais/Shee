@@ -268,7 +268,7 @@ export default function App() {
     } else if (view === 'art-of-pleasing-couples') {
       window.location.hash = 'art-of-pleasing-couples';
     } else {
-      if (window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
+      if (window.location.hash.startsWith('#workshop/') || window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
         history.pushState(null, '', ' ');
       }
     }
