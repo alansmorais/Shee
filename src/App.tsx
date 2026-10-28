@@ -36,8 +36,15 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples' | 'workshop-detail'>(() => {
     if (typeof window !== 'undefined') {
       const h = window.location.hash;
-      if (h.startsWith('#workshop/') || /^\/workshops\/.+/.test(window.location.pathname)) return 'workshop-detail';
-      if (window.location.pathname.replace(/\/+$/, '') === '/workshops') return 'workshops';
+      const path = window.location.pathname.replace(/\/+$/, '') || '/';
+      if (h.startsWith('#workshop/') || /^\/workshops\/.+/.test(path)) return 'workshop-detail';
+      if (path === '/workshops') return 'workshops';
+      if (path === '/for-women') return 'women';
+      if (path === '/for-men') return 'men';
+      if (path === '/play-with-me-1') return 'play-with-me-1';
+      if (path === '/the-art-of-pleasing-a-woman') return 'art-of-pleasing-woman';
+      if (path === '/how-to-please-a-man') return 'how-to-please-a-man';
+      if (path === '/the-art-of-pleasing-couples') return 'art-of-pleasing-couples';
       if (h === '#admin') return 'admin';
       if (h === '#workshops' || h === '#workshop') return 'workshops';
       if (h === '#women') return 'women';
@@ -134,9 +141,24 @@ export default function App() {
     // Check URL hash for direct admin routing (e.g. #admin, #workshops)
     const handleHashSync = () => {
       const h = window.location.hash;
-      if (window.location.pathname.replace(/\/+$/, '') === '/workshops') {
+      const path = window.location.pathname.replace(/\/+$/, '') || '/';
+      if (path === '/workshops') {
         setCurrentView('workshops');
-      } else if (window.location.pathname.startsWith('/workshops/') || h.startsWith('#workshop/')) {
+      } else if (path === '/for-women') {
+        setCurrentView('women');
+      } else if (path === '/for-men') {
+        setCurrentView('men');
+      } else if (path === '/play-with-me-1') {
+        setCurrentView('play-with-me-1');
+      } else if (path === '/the-art-of-pleasing-a-woman') {
+        setCurrentView('art-of-pleasing-woman');
+      } else if (path === '/how-to-please-a-man') {
+        setCurrentView('how-to-please-a-man');
+      } else if (path === '/the-art-of-pleasing-couples') {
+        setCurrentView('art-of-pleasing-couples');
+      } else if (path === '/' && !h) {
+        setCurrentView('home');
+      } else if (path.startsWith('/workshops/') || h.startsWith('#workshop/')) {
         const raw = window.location.pathname.startsWith('/workshops/') ? window.location.pathname.slice('/workshops/'.length) : h.slice('#workshop/'.length);
         try { setSelectedWorkshopId(decodeURIComponent(raw)); } catch { setSelectedWorkshopId(raw); }
         setCurrentView('workshop-detail');
@@ -266,20 +288,20 @@ export default function App() {
   // View Navigation
   const handleNavigate = (view: 'home' | 'women' | 'men' | 'workshops' | 'admin' | 'play-with-me-1' | 'art-of-pleasing-woman' | 'how-to-please-a-man' | 'art-of-pleasing-couples', targetId?: string) => {
     setCurrentView(view);
+    const routeByView: Record<string, string> = {
+      home: '/',
+      women: '/for-women',
+      men: '/for-men',
+      workshops: '/workshops',
+      'play-with-me-1': '/play-with-me-1',
+      'art-of-pleasing-woman': '/the-art-of-pleasing-a-woman',
+      'how-to-please-a-man': '/how-to-please-a-man',
+      'art-of-pleasing-couples': '/the-art-of-pleasing-couples',
+    };
     if (view === 'admin') {
-      window.location.hash = 'admin';
-    } else if (view === 'play-with-me-1') {
-      window.location.hash = 'play-with-me-1';
-    } else if (view === 'art-of-pleasing-woman') {
-      window.location.hash = 'art-of-pleasing-woman';
-    } else if (view === 'how-to-please-a-man') {
-      window.location.hash = 'how-to-please-a-man';
-    } else if (view === 'art-of-pleasing-couples') {
-      window.location.hash = 'art-of-pleasing-couples';
-    } else {
-      if (window.location.hash.startsWith('#workshop/') || window.location.hash === '#admin' || window.location.hash === '#play-with-me-1' || window.location.hash === '#art-of-pleasing-woman' || window.location.hash === '#how-to-please-a-man' || window.location.hash === '#art-of-pleasing-couples') {
-        history.pushState(null, '', ' ');
-      }
+      window.history.pushState(null, '', '/#admin');
+    } else if (routeByView[view]) {
+      window.history.pushState(null, '', routeByView[view]);
     }
     if (targetId) {
       setTimeout(() => {
