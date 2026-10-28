@@ -494,7 +494,7 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
     facilitators: ['Anne Brit Borch Sandberg', 'Daniela Torp'],
     subtitle: 'Two days that can change the way you understand yourself and others',
     description: 'Trauma affects how we experience ourselves, other people and our relationships. Explore how past experiences can shape attachment, reactions and everyday patterns.',
-    image: 'https://danielatorp.no/images/web-1920---workshop.jpg',
+    image: 'https://danielatorp.no/images/promo-small.jpg',
     gallery: [
       { src: 'https://danielatorp.no/images/promo-small.jpg', alt: 'Trauma Workshops Ané & Daniela — event flyer' },
       { src: 'https://danielatorp.no/images/anne-small.jpg', alt: 'Anne Brit Borch Sandberg — facilitator' },
