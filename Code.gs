@@ -319,11 +319,19 @@ function doPost(e) {
           return ContentService.createTextOutput(JSON.stringify({ success: false, error: "System busy. Please try again in a moment." })).setMimeType(ContentService.MimeType.JSON);
         }
 
-        const headers = ["Timestamp", "Booking ID", "Client Name", "Email", "Phone", "Service", "Practitioner", "Requested Date", "Requested Time", "Notes"];
+        const headers = ["Timestamp", "Booking ID", "Client Name", "Email", "Phone", "Service", "Practitioner", "Requested Date", "Requested Time", "Notes", "Registration Source"];
         const sheet = getOrCreateSheet(ss, "Bookings", headers);
+        // Add the source column safely to existing sheets without changing existing columns.
+        const currentHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+        if (currentHeaders.indexOf("Registration Source") === -1) {
+          const sourceColumn = currentHeaders.length + 1;
+          sheet.getRange(1, sourceColumn).setValue("Registration Source");
+          sheet.getRange(1, sourceColumn).setFontWeight("bold").setBackground("#f3f4f6");
+        }
         sheet.appendRow([
-          new Date(), data.bookingId || "", (data.first || "") + " " + (data.last || ""), data.email || "", data.phone || "", 
-          data.service || "", data.practitioner || "", data.date || "", data.time || "", data.notes || ""
+          new Date(), data.bookingId || "", (data.first || "") + " " + (data.last || ""), data.email || "", data.phone || "",
+          data.service || "", data.practitioner || "", data.date || "", data.time || "", data.notes || "",
+          data.registrationSource || "SHE"
         ]);
 
         const recipient = data.practitionerEmail || PRIMARY_EMAIL;
