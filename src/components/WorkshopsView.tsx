@@ -122,6 +122,9 @@ export const WorkshopsView: React.FC<WorkshopsViewProps> = ({
                       <button type="button" onClick={() => onOpenWorkshop(w.id)} className="text-left font-serif text-lg sm:text-xl lg:text-2xl text-main font-normal group-hover:text-accent-editorial transition-colors cursor-pointer">
                         {w.title}
                       </button>
+                      {w.time && (
+                        <p className="text-xs sm:text-sm text-accent-editorial font-medium mt-1.5">{w.time}</p>
+                      )}
                       <div className="mt-2.5">
                         <button type="button" onClick={() => onOpenWorkshop(w.id)} className="inline-flex items-center space-x-1.5 text-xs text-accent-editorial hover:underline font-semibold uppercase tracking-wider cursor-pointer">
                           <span>View workshop details</span><ArrowRight className="w-3 h-3" />
