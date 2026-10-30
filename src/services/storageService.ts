@@ -505,6 +505,8 @@ class StorageService {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'booking',
+            registrationSource: 'SHE',
+            siteUrl: typeof window !== 'undefined' ? window.location.origin : 'https://sheacademy.no',
             bookingId: newBooking.id,
             first: newBooking.firstName,
             last: newBooking.lastName,
