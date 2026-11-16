@@ -149,7 +149,7 @@ export const Footer: React.FC<FooterProps> = ({
               <a href="#" className="hover:text-main transition-colors">
                 Instagram
               </a>
-              <a href="#" className="hover:text-main transition-colors">
+              <a href="https://www.facebook.com/profile.php?id=61592808299591" target="_blank" rel="noopener noreferrer" className="hover:text-main transition-colors">
                 Facebook
               </a>
 
