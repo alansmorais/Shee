@@ -484,12 +484,12 @@ export const INITIAL_SETTINGS: AdminSettings = {
 export const INITIAL_WORKSHOPS: Workshop[] = [
   {
     id: 'ws-4',
-    date: '21 - 22/11/2026',
+    date: '13/03/2027',
     title: 'Trauma Workshops Ané & Daniela',
     status: 'open',
-    price: 2850,
+    price: 1190,
     currency: 'NOK',
-    time: '21 November 10:00–18:00; 22 November 10:00–15:00',
+    time: 'Saturday, 13 March 2027 · 10:00–19:00',
     location: 'Prindsen Yoga & Therapy, Storgata 36C, Oslo, Norway',
     facilitators: ['Anne Brit Borch Sandberg', 'Daniela Torp'],
     subtitle: 'Two days that can change the way you understand yourself and others',
@@ -513,7 +513,7 @@ export const INITIAL_WORKSHOPS: Workshop[] = [
       'For professionals who support and work with other people'
     ],
     whatToBring: ['Comfortable clothes', 'Notebook and pen'],
-    priceNote: 'Total price: 2,850 NOK. Deposit: 1,425 NOK (50% of the total price). Payment is made only via Vipps #970088. Your place is confirmed when the deposit is paid. Registration by SMS: 958 64 782.',
+    priceNote: 'Total price: 1,190 NOK. Registration by SMS: 958 64 782.',
     hosts: 'Anne Brit Borch Sandberg is a psychiatric nurse, cognitive therapist and AIM supervisor (Recognition, Insight, Mastery). Daniela Torp has more than 20 years of experience with the body, intimacy, sexuality and relationships, using body-based and trauma-informed approaches.',
   },
   {
