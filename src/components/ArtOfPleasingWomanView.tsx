@@ -208,10 +208,10 @@ export const ArtOfPleasingWomanView: React.FC<ArtOfPleasingWomanViewProps> = ({
                   <div>
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-main">Sanctuary Venue</h4>
                     <p className="text-sm text-main font-medium mt-0.5">
-                      Tantracentrum Kameňák
+                      Oslo, Norway
                     </p>
                     <p className="text-xs text-muted-editorial font-light mt-0.5">
-                      Kamenný Újezd 83, Nýřany
+                      Oslo, Norway
                     </p>
                     <p className="text-[11px] text-muted-editorial/80 italic mt-1">
                       🚗 5 mins drive from Bory (direction Zbůch, Nýřany)<br />
