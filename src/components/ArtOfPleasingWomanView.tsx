@@ -238,7 +238,7 @@ export const ArtOfPleasingWomanView: React.FC<ArtOfPleasingWomanViewProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between items-baseline">
                   <span className="text-xs uppercase tracking-wider text-muted-editorial">Investment</span>
-                  <span className="font-serif text-lg text-main font-semibold">2,900 CZK</span>
+                  <span className="font-serif text-lg text-main font-semibold">Price on request (NOK)</span>
                 </div>
                 <p className="text-[10px] text-muted-editorial/80 italic leading-relaxed">
                   Spaces are highly limited to preserve a highly secure, confidential, and individual learning space.
