@@ -207,10 +207,10 @@ export const HowToPleaseManView: React.FC<HowToPleaseManViewProps> = ({
                   <div>
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-main">Venue</h4>
                     <p className="text-sm text-main font-medium mt-0.5">
-                      Presence Center, Oslo / Tantracentrum Kameňák
+                      Oslo, Norway
                     </p>
                     <p className="text-xs text-muted-editorial font-light mt-0.5">
-                      Kamenný Újezd 83, Nýřany
+                      Oslo, Norway
                     </p>
                   </div>
                 </div>
